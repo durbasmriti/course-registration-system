@@ -1,72 +1,169 @@
-/* Pingala Theme Colors */
+/* --- CSS RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
   --pingala-red: #D32F2F;
   --pingala-teal: #4DB6AC;
   --sidebar-dark: #263238;
-  --bg-light: #f4f7f6;
 }
 
-.app-container {
+body, html, #root {
+  height: 100%;
+  width: 100%;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: #f0f2f5;
+}
+
+/* --- LOGIN PAGE --- */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--sidebar-dark);
+}
+
+.login-box {
+  background: white;
+  padding: 50px 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.login-box h2 {
+  margin-bottom: 25px;
+  color: #333;
+  font-weight: 600;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.login-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--pingala-red);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.login-form button:hover {
+  background-color: #b71c1c;
+}
+
+/* --- DASHBOARD LAYOUT --- */
+.dashboard {
   display: flex;
   height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 100vw;
 }
 
-/* Sidebar */
 .sidebar {
-  width: 240px;
+  width: 260px;
   background: var(--sidebar-dark);
-  color: white;
-  padding: 20px 0;
+  color: #ecf0f1;
+  display: flex;
+  flex-direction: column;
 }
 
-.sidebar-logo {
-  font-size: 24px;
-  font-weight: bold;
-  padding: 0 20px 20px;
+.sidebar-header {
+  padding: 30px 20px;
+  text-align: center;
   border-bottom: 1px solid #37474f;
 }
 
-/* Main Content */
-.main-content {
+.sidebar-logo-img {
+  width: 60px;
+  margin-bottom: 10px;
+}
+
+.role-label {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #90a4ae;
+}
+
+.nav-item {
+  padding: 15px 25px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+.nav-item:hover { background: #1a252b; }
+.nav-item.active { border-left: 4px solid var(--pingala-red); background: #1a252b; }
+
+.main-area {
   flex: 1;
-  background: var(--bg-light);
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .header {
   background: var(--pingala-red);
   color: white;
-  padding: 10px 20px;
+  height: 60px;
+  padding: 0 25px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.content-body {
-  padding: 20px;
+.header-left { display: flex; alignItems: center; gap: 15px; }
+.header-logo-img { height: 35px; }
+
+/* --- DATA TABLES --- */
+.table-container {
+  padding: 25px;
+  overflow-y: auto;
+  flex: 1;
 }
 
-/* Table Styling */
-.course-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
-  font-size: 13px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.course-table th {
+.data-table th {
   background: var(--pingala-teal);
   color: white;
-  padding: 12px;
+  padding: 15px;
   text-align: left;
+  font-size: 13px;
 }
 
-.course-table td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+.data-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #edf2f7;
+  font-size: 13px;
 }
-
-.status-submitted { color: green; font-weight: bold; }
-.status-dropped { color: red; font-weight: bold; }

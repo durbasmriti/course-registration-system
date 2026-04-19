@@ -1,61 +1,104 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [courses, setCourses] = useState([]);
+  const [user, setUser] = useState(null); 
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
 
-  useEffect(() => {
-    fetch('http://localhost:5000/api/courses')
-      .then(res => res.json())
-      .then(data => setCourses(data))
-      .catch(err => console.error("Error fetching courses:", err));
-  }, []);
+  const handleLogin = (e) => {
+    if (e) e.preventDefault();
+    const { username, password } = credentials;
+    if (username === password && ['student', 'professor', 'admin'].includes(username.toLowerCase())) {
+      setUser({ role: username.toLowerCase(), name: username.toUpperCase() });
+    } else {
+      alert("Try: student, professor, or admin");
+    }
+  };
 
-  return (
-    <div className="app-container">
-      <div className="sidebar">
-        <div className="sidebar-logo">pingala</div>
-        <div style={{padding: '20px', fontSize: '14px'}}>Dashboard</div>
-        <div style={{padding: '20px', fontSize: '14px', background: '#1a252b'}}>Academics</div>
-      </div>
-
-      <div className="main-content">
-        <header className="header">
-          <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
-            <span style={{fontSize: '18px', fontWeight: 'bold'}}>Student Registration Application</span>
-          </div>
-          <div style={{fontSize: '14px'}}>AAYUSHMAN KUMAR</div>
-        </header>
-
-        <div className="content-body">
-          <table className="course-table">
-            <thead>
-              <tr>
-                <th>Course Id</th>
-                <th>Course Name</th>
-                <th>Instructor</th>
-                <th>Credits</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {courses.map(course => (
-                <tr key={course.id}>
-                  <td style={{color: '#2196F3', fontWeight: '500'}}>{course.id}</td>
-                  <td>{course.name}</td>
-                  <td>{course.instructor}</td>
-                  <td>{course.credits}</td>
-                  <td className={course.status.includes('Dropped') ? 'status-dropped' : 'status-submitted'}>
-                    {course.status}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+  if (!user) {
+    return (
+      <div className="login-container">
+        <div className="login-box">
+          <img src="/logo_black.png" alt="IITK Logo" className="login-logo" 
+               onError={(e) => e.target.src = "https://via.placeholder.com/100?text=LOGO"}/>
+          <h2>Academic Portal</h2>
+          <form className="login-form" onSubmit={handleLogin}>
+            <input 
+              type="text" 
+              placeholder="Username" 
+              autoComplete="off"
+              onChange={e => setCredentials({...credentials, username: e.target.value})} 
+            />
+            <input 
+              type="password" 
+              placeholder="Password" 
+              onChange={e => setCredentials({...credentials, password: e.target.value})} 
+            />
+            <button type="submit">LOGIN</button>
+          </form>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="dashboard">
+      <aside className="sidebar">
+        <div className="sidebar-header">
+           <img src="/logo_white.png" alt="Logo" className="sidebar-logo-img" 
+                onError={(e) => e.target.src = "https://via.placeholder.com/60?text=LOGO"}/>
+           <p className="role-label">{user.role.toUpperCase()} PANEL</p>
+        </div>
+        <nav className="sidebar-nav">
+          <div className="nav-item active">Registration</div>
+          <div className="nav-item" onClick={() => setUser(null)}>Logout</div>
+        </nav>
+      </aside>
+
+      <main className="main-area">
+        <header className="header">
+          <div className="header-left">
+            <img src="/logo_white.png" alt="IITK" className="header-logo-img" />
+            <span className="portal-title" style={{marginLeft: '10px', fontWeight: '600'}}>Registration Portal</span>
+          </div>
+          <div className="header-right">
+            <span>Welcome, <strong>{user.name}</strong></span>
+          </div>
+        </header>
+
+        <section className="table-container">
+          {user.role === 'student' && <StudentTable />}
+          {user.role === 'professor' && <ProfessorTable />}
+          {user.role === 'admin' && <AdminTable />}
+        </section>
+      </main>
     </div>
   );
 }
+
+// Simple Placeholder Components for Tables
+const StudentTable = () => (
+  <table className="data-table">
+    <thead>
+      <tr><th>S.No</th><th>Course ID</th><th>Course Name</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>CE371</td><td>Reinforced Concrete</td><td><b style={{color:'orange'}}>Pending</b></td></tr>
+    </tbody>
+  </table>
+);
+
+const ProfessorTable = () => (
+    <table className="data-table">
+      <thead><tr><th>Roll No</th><th>Name</th><th>CPI</th><th>Action</th></tr></thead>
+      <tbody><tr><td>230029</td><td>Aayushman Kumar</td><td>9.2</td><td><button>Accept</button></td></tr></tbody>
+    </table>
+);
+
+const AdminTable = () => (
+    <div style={{textAlign:'center', padding: '50px'}}>
+        <button style={{padding:'15px 30px', background: '#D32F2F', color: 'white', border:'none', borderRadius: '5px'}}>RUN ALLOCATION</button>
+    </div>
+);
 
 export default App;
