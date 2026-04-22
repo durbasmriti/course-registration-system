@@ -76,8 +76,7 @@ CREATE TABLE course_prerequisites (
   CONSTRAINT fk_prereq_course FOREIGN KEY (course_id) REFERENCES courses(course_id)
     ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT fk_prereq_prerequisite FOREIGN KEY (prerequisite_course_id) REFERENCES courses(course_id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT chk_prereq_neq CHECK (course_id <> prerequisite_course_id)
+    ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- Priority rules table (per-course weight configuration)
