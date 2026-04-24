@@ -1,6 +1,7 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+
 DROP TABLE IF EXISTS student_transcript;
 DROP TABLE IF EXISTS enrollments;
 DROP TABLE IF EXISTS priority_rules;
@@ -14,6 +15,7 @@ DROP TABLE IF EXISTS student_profiles;
 DROP TABLE IF EXISTS users;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
 
 -- 1. USERS
 CREATE TABLE users (

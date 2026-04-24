@@ -1,5 +1,3 @@
-SET FOREIGN_KEY_CHECKS = 0;
-
 -- -------------------------------------------------------
 -- USERS
 -- -------------------------------------------------------
@@ -109,4 +107,4 @@ INSERT INTO student_transcript (student_id, offering_id, grade, is_passed, compl
 -- (6, 2, 3, 'minor',    'pending'),   -- Pallavi   → CS610 (cleared: passed CS371)
 -- (9, 3, 3, 'major',    'pending'),   -- Jyothika  → CE683 (no CS610 — failed CS371)
 
-SET FOREIGN_KEY_CHECKS = 1;
+
