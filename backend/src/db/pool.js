@@ -1,3 +1,4 @@
+//backend/src/db/pool.js
 const mysql = require('mysql2/promise');
 
 function createPool() {

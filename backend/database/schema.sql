@@ -3,112 +3,176 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS waitlist;
 DROP TABLE IF EXISTS enrollments;
-DROP TABLE IF EXISTS course_prerequisites;
+DROP TABLE IF EXISTS requests;
 DROP TABLE IF EXISTS priority_rules;
+DROP TABLE IF EXISTS course_prerequisites;
+DROP TABLE IF EXISTS course_offerings;
 DROP TABLE IF EXISTS courses;
 DROP TABLE IF EXISTS academics;
 DROP TABLE IF EXISTS forgot_password;
+DROP TABLE IF EXISTS students;
 DROP TABLE IF EXISTS users;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Users table (unified for students and professors)
+-- ----------------------
+-- USERS (authentication)
+-- ----------------------
 CREATE TABLE users (
   user_id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(255) NOT NULL UNIQUE,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  phone VARCHAR(20),
+  username VARCHAR(255) UNIQUE NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  role ENUM('student', 'professor', 'admin') NOT NULL,
-  is_active BOOLEAN DEFAULT TRUE,
-  last_login TIMESTAMP NULL,
+  role ENUM('student','professor','admin') NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- Forgot Password table for password recovery
-CREATE TABLE forgot_password (
-  user_id INT NOT NULL,
-  token VARCHAR(255) NOT NULL UNIQUE,
-  expires_at TIMESTAMP NOT NULL,
-  is_used BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (user_id, token),
-  CONSTRAINT fk_forgot_password_user FOREIGN KEY (user_id) REFERENCES users(user_id)
-    ON UPDATE CASCADE ON DELETE CASCADE
+-- ----------------------
+-- STUDENTS (academic info)
+-- ----------------------
+CREATE TABLE students (
+  user_id INT PRIMARY KEY,
+  dept VARCHAR(50),
+  year INT,
+  cpi DECIMAL(4,2),
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Academic periods/semesters table
+-- ----------------------
+-- PASSWORD RESET
+-- ----------------------
+CREATE TABLE forgot_password (
+  token VARCHAR(255) PRIMARY KEY,
+  user_id INT,
+  expires_at TIMESTAMP,
+  is_used BOOLEAN DEFAULT FALSE,
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ----------------------
+-- ACADEMIC TERMS
+-- ----------------------
 CREATE TABLE academics (
   academic_id INT AUTO_INCREMENT PRIMARY KEY,
-  type ENUM('semester', 'summer', 'special') NOT NULL,
-  year_start INT NOT NULL,
-  year_end INT NOT NULL,
-  sem_number INT NOT NULL,
-  start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
-  is_active BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  year INT NOT NULL,
+  semester INT NOT NULL,
+  start_date DATE,
+  end_date DATE,
+  is_active BOOLEAN DEFAULT FALSE
 ) ENGINE=InnoDB;
 
--- Courses table
+-- ----------------------
+-- COURSES (master)
+-- ----------------------
 CREATE TABLE courses (
   course_id INT AUTO_INCREMENT PRIMARY KEY,
-  course_code VARCHAR(32) NOT NULL UNIQUE,
+  course_code VARCHAR(20) UNIQUE NOT NULL,
   course_name VARCHAR(255) NOT NULL,
-  credits INT NOT NULL,
-  max_seats INT NOT NULL DEFAULT 0,
+  credits INT NOT NULL
+) ENGINE=InnoDB;
+
+-- ----------------------
+-- COURSE OFFERINGS (per semester)
+-- ----------------------
+CREATE TABLE course_offerings (
+  offering_id INT AUTO_INCREMENT PRIMARY KEY,
+  course_id INT NOT NULL,
+  academic_id INT NOT NULL,
   professor_id INT NOT NULL,
+  max_seats INT NOT NULL,
   department VARCHAR(100),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_courses_professor FOREIGN KEY (professor_id) REFERENCES users(user_id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
+
+  FOREIGN KEY (course_id) REFERENCES courses(course_id)
+    ON DELETE CASCADE,
+  FOREIGN KEY (academic_id) REFERENCES academics(academic_id)
+    ON DELETE CASCADE,
+  FOREIGN KEY (professor_id) REFERENCES users(user_id)
+    ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-CREATE INDEX idx_courses_professor ON courses(professor_id);
-CREATE INDEX idx_courses_code ON courses(course_code);
-
--- Course prerequisites table
+-- ----------------------
+-- PREREQUISITES
+-- ----------------------
 CREATE TABLE course_prerequisites (
-  course_id INT NOT NULL,
-  prerequisite_course_id INT NOT NULL,
+  course_id INT,
+  prerequisite_course_id INT,
   PRIMARY KEY (course_id, prerequisite_course_id),
-  CONSTRAINT fk_prereq_course FOREIGN KEY (course_id) REFERENCES courses(course_id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT fk_prereq_prerequisite FOREIGN KEY (prerequisite_course_id) REFERENCES courses(course_id)
-    ON UPDATE CASCADE ON DELETE CASCADE
+
+  FOREIGN KEY (course_id) REFERENCES courses(course_id)
+    ON DELETE CASCADE,
+  FOREIGN KEY (prerequisite_course_id) REFERENCES courses(course_id)
+    ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Priority rules table (per-course weight configuration)
-CREATE TABLE priority_rules (
-  priority_rule_id INT AUTO_INCREMENT PRIMARY KEY,
-  course_id VARCHAR(32) NOT NULL,
-  weight_cpi DECIMAL(8,4) NOT NULL DEFAULT 1.0,
-  weight_year DECIMAL(8,4) NOT NULL DEFAULT 0.1,
-  weight_first_come DECIMAL(8,4) NOT NULL DEFAULT 0.01,
-  weight_dept_match DECIMAL(8,4) NOT NULL DEFAULT 0.5,
-  weight_major_intent DECIMAL(8,4) NOT NULL DEFAULT 1.0,
-  weight_minor_intent DECIMAL(8,4) NOT NULL DEFAULT 0.6,
-  weight_elective_intent DECIMAL(8,4) NOT NULL DEFAULT 0.4,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
-
--- Enrollments table with course request status and intent
-CREATE TABLE enrollments (
-  enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
+-- ----------------------
+-- REQUESTS (student actions)
+-- ----------------------
+CREATE TABLE requests (
+  request_id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
-  course_id INT NOT NULL,
-  sem_number INT NOT NULL,
-  intent ENUM('major', 'minor', 'elective') NOT NULL DEFAULT 'major',
-  status ENUM('pending', 'accepted', 'rejected', 'enrolled', 'waitlisted') NOT NULL DEFAULT 'pending',
+  offering_id INT NOT NULL,
+
+  intent ENUM('major','minor','elective') DEFAULT 'major',
+  status ENUM('requested','accepted','rejected','waitlisted') DEFAULT 'requested',
+
   requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_enrollments_user FOREIGN KEY (user_id) REFERENCES users(user_id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT fk_enrollments_course FOREIGN KEY (course_id) REFERENCES courses(course_id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
-  UNIQUE KEY uq_user_course_sem (user_id, course_id, sem_number)
+
+  FOREIGN KEY (user_id) REFERENCES students(user_id)
+    ON DELETE CASCADE,
+  FOREIGN KEY (offering_id) REFERENCES course_offerings(offering_id)
+    ON DELETE CASCADE,
+
+  UNIQUE KEY uq_user_offering (user_id, offering_id)
 ) ENGINE=InnoDB;
 
-CREATE INDEX idx_enrollments_course ON enrollments(course_id);
-CREATE INDEX idx_enrollments_status ON enrollments(status);
-CREATE INDEX idx_enrollments_user ON enrollments(user_id);
+-- ----------------------
+-- PRIORITY RULES
+-- ----------------------
+CREATE TABLE priority_rules (
+  offering_id INT PRIMARY KEY,
+
+  weight_cpi DECIMAL(8,4) DEFAULT 1.0,
+  weight_year DECIMAL(8,4) DEFAULT 0.1,
+  weight_first_come DECIMAL(8,4) DEFAULT 0.01,
+  weight_dept DECIMAL(8,4) DEFAULT 0.5,
+
+  FOREIGN KEY (offering_id) REFERENCES course_offerings(offering_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ----------------------
+-- ENROLLMENTS (final allocation)
+-- ----------------------
+CREATE TABLE enrollments (
+  user_id INT,
+  offering_id INT,
+  enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (user_id, offering_id),
+
+  FOREIGN KEY (user_id) REFERENCES students(user_id)
+    ON DELETE CASCADE,
+  FOREIGN KEY (offering_id) REFERENCES course_offerings(offering_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ----------------------
+-- WAITLIST (ordered)
+-- ----------------------
+CREATE TABLE waitlist (
+  user_id INT,
+  offering_id INT,
+  position INT,
+
+  PRIMARY KEY (user_id, offering_id),
+  UNIQUE KEY uq_position (offering_id, position),
+
+  FOREIGN KEY (user_id) REFERENCES students(user_id)
+    ON DELETE CASCADE,
+  FOREIGN KEY (offering_id) REFERENCES course_offerings(offering_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
