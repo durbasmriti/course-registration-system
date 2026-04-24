@@ -3,7 +3,9 @@ const {
   getAllCourses,
   requestCourse,
   updateOfferingRules,
-  processAllocations
+  processAllocations,
+  addCourse,
+  addPrerequisite
 } = require('../services/courseService');
 
 const getCourses = async (req, res) => {
@@ -68,9 +70,48 @@ const runAllocationController = async (req, res) => {
   }
 };
 
+// POST /api/courses/add
+const addCourseController = async (req, res) => {
+  try {
+    const { professor_id, course_id, academic_id, max_seats } = req.body;
+
+    if (!professor_id || !course_id || !academic_id) {
+      return res.status(400).json({
+        message: "Missing required fields: professor_id, course_id, academic_id"
+      });
+    }
+
+    const result = await addCourse(professor_id, course_id, academic_id, max_seats);
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// POST /api/courses/:courseId/prerequisites
+const addPrerequisiteController = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { prerequisite_id } = req.body;
+
+    if (!courseId || !prerequisite_id) {
+      return res.status(400).json({
+        message: "Missing required fields: courseId in params, prerequisite_id in body"
+      });
+    }
+
+    await addPrerequisite(parseInt(courseId), prerequisite_id);
+    res.status(201).json({ message: "Prerequisite added successfully" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 module.exports = {
   getCourses,
   requestCourseController,
   updateRulesController,
-  runAllocationController
+  runAllocationController,
+  addCourseController,
+  addPrerequisiteController
 };
