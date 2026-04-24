@@ -1,66 +1,117 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
--- ----------------------
--- USERS (Admin, Professors, Students)
--- ----------------------
-INSERT INTO users (username, email, phone, password_hash, role, is_active, last_login) VALUES
--- Admin
-('admin', 'admin@iitk.ac.in', '9999999999', '$2b$10$admin_hash_placeholder', 'admin', TRUE, NULL),
+--------------------------------------------------
+-- USERS
+--------------------------------------------------
+INSERT INTO users (user_id, username, password_hash, role, is_active) VALUES
+(1, 'admin', '$2b$10$admin_hash_placeholder', 'admin', TRUE),
+
 -- Professors
-('mehta', 'mehta@iitk.ac.in', '9876543210', '$2b$10$prof1_hash_placeholder', 'professor', TRUE, NULL),
-('iyer', 'iyer@iitk.ac.in', '9876543211', '$2b$10$prof2_hash_placeholder', 'professor', TRUE, NULL),
-('gupta', 'gupta@iitk.ac.in', '9876543212', '$2b$10$prof3_hash_placeholder', 'professor', TRUE, NULL),
+(2, 'mehta', '$2b$10$prof1_hash_placeholder', 'professor', TRUE),
+(3, 'iyer', '$2b$10$prof2_hash_placeholder', 'professor', TRUE),
+(4, 'gupta', '$2b$10$prof3_hash_placeholder', 'professor', TRUE),
+
 -- Students
-('amit_sharma', 'amit.sharma@iitk.ac.in', '9111111111', '$2b$10$student1_hash_placeholder', 'student', TRUE, NULL),
-('neha_verma', 'neha.verma@iitk.ac.in', '9111111112', '$2b$10$student2_hash_placeholder', 'student', TRUE, NULL),
-('ravi_kumar', 'ravi.kumar@iitk.ac.in', '9111111113', '$2b$10$student3_hash_placeholder', 'student', TRUE, NULL),
-('priya_singh', 'priya.singh@iitk.ac.in', '9111111114', '$2b$10$student4_hash_placeholder', 'student', TRUE, NULL),
-('arjun_das', 'arjun.das@iitk.ac.in', '9111111115', '$2b$10$student5_hash_placeholder', 'student', TRUE, NULL);
+(5, 'amit_sharma', '$2b$10$student1_hash_placeholder', 'student', TRUE),
+(6, 'neha_verma', '$2b$10$student2_hash_placeholder', 'student', TRUE),
+(7, 'ravi_kumar', '$2b$10$student3_hash_placeholder', 'student', TRUE),
+(8, 'priya_singh', '$2b$10$student4_hash_placeholder', 'student', TRUE),
+(9, 'arjun_das', '$2b$10$student5_hash_placeholder', 'student', TRUE);
 
--- ----------------------
+--------------------------------------------------
+-- STUDENT PROFILES
+--------------------------------------------------
+INSERT INTO student_profiles (user_id, name, roll_no, email, department, cpi) VALUES
+(5, 'Amit Sharma', '200101', 'amit.sharma@iitk.ac.in', 'CSE', 8.5),
+(6, 'Neha Verma', '200102', 'neha.verma@iitk.ac.in', 'CSE', 9.0),
+(7, 'Ravi Kumar', '200103', 'ravi.kumar@iitk.ac.in', 'CE', 7.8),
+(8, 'Priya Singh', '200104', 'priya.singh@iitk.ac.in', 'CE', 8.2),
+(9, 'Arjun Das', '200105', 'arjun.das@iitk.ac.in', 'CSE', 8.9);
+
+--------------------------------------------------
+-- PROFESSOR PROFILES
+--------------------------------------------------
+INSERT INTO professor_profiles (user_id, faculty_id, name, email, department) VALUES
+(2, 'FAC101', 'Prof. Mehta', 'mehta@iitk.ac.in', 'CSE'),
+(3, 'FAC102', 'Prof. Iyer', 'iyer@iitk.ac.in', 'CSE'),
+(4, 'FAC103', 'Prof. Gupta', 'gupta@iitk.ac.in', 'CE');
+
+--------------------------------------------------
 -- ACADEMICS (Current Semester)
--- ----------------------
-INSERT INTO academics (type, year_start, year_end, sem_number, start_date, end_date, is_active) VALUES
-('semester', 2025, 2026, 2, '2026-01-15', '2026-05-31', TRUE);
+--------------------------------------------------
+INSERT INTO academics (academic_id, year, semester, is_active) VALUES
+(1, 2026, 'sem2', TRUE);
 
--- ----------------------
+--------------------------------------------------
 -- COURSES
--- ----------------------
-INSERT INTO courses (course_code, course_name, credits, max_seats, professor_id, department) VALUES
-('CS371', 'Design of Reinforced Concrete Structures', 9, 45, 2, 'CSE'),
-('CS610', 'Programming for Performance', 9, 40, 2, 'CSE'),
-('CE683', 'Humans, Environment and Sustainable Development', 9, 50, 3, 'CE');
+--------------------------------------------------
+INSERT INTO courses (course_id, course_code, title, credits, department) VALUES
+(1, 'CS371', 'Design of Reinforced Concrete Structures', 9, 'CSE'),
+(2, 'CS610', 'Programming for Performance', 9, 'CSE'),
+(3, 'CE683', 'Humans, Environment and Sustainable Development', 9, 'CE');
 
--- ----------------------
--- COURSE PREREQUISITES
--- ----------------------
-INSERT INTO course_prerequisites (course_id, prerequisite_course_id) VALUES
+--------------------------------------------------
+-- COURSE OFFERINGS (link professor + semester + seats)
+--------------------------------------------------
+INSERT INTO course_offerings (offering_id, course_id, professor_id, academic_id, max_seats) VALUES
+(1, 1, 2, 1, 45),  -- CS371 by Mehta
+(2, 2, 2, 1, 40),  -- CS610 by Mehta
+(3, 3, 3, 1, 50);  -- CE683 by Iyer
+
+--------------------------------------------------
+-- REGISTRATION TYPES
+--------------------------------------------------
+--------------------------------------------------
+-- PREREQUISITES
+--------------------------------------------------
+INSERT INTO prerequisites (course_id, prerequisite_id) VALUES
 (2, 1);  -- CS610 requires CS371
 
--- ----------------------
--- PRIORITY RULES (Per-course weights)
--- ----------------------
-INSERT INTO priority_rules (course_id, weight_cpi, weight_year, weight_first_come, weight_dept_match, weight_major_intent, weight_minor_intent, weight_elective_intent) VALUES
+--------------------------------------------------
+-- PRIORITY RULES
+--------------------------------------------------
+INSERT INTO priority_rules (
+  course_id,
+  weight_cpi,
+  weight_year,
+  weight_first_come,
+  weight_dept_match,
+  weight_major,
+  weight_minor,
+  weight_elective
+) VALUES
 (1, 1.0, 0.1, 0.01, 0.5, 1.0, 0.6, 0.4),
 (2, 1.0, 0.1, 0.01, 0.5, 1.0, 0.6, 0.4),
 (3, 1.0, 0.1, 0.01, 0.5, 1.0, 0.6, 0.4);
 
--- ----------------------
--- ENROLLMENTS (Course Requests)
--- ----------------------
-INSERT INTO enrollments (user_id, course_id, sem_number, intent, status, requested_at) VALUES
--- Student 1: Amit Sharma
-(6, 1, 2, 'major', 'pending', NOW()),
-(6, 2, 2, 'major', 'pending', NOW()),
--- Student 2: Neha Verma
-(7, 1, 2, 'major', 'pending', NOW()),
-(7, 2, 2, 'minor', 'pending', NOW()),
--- Student 3: Ravi Kumar
-(8, 3, 2, 'major', 'pending', NOW()),
--- Student 4: Priya Singh
-(9, 3, 2, 'elective', 'pending', NOW()),
--- Student 5: Arjun Das
-(10, 1, 2, 'major', 'pending', NOW()),
-(10, 2, 2, 'major', 'pending', NOW());
+--------------------------------------------------
+-- ENROLLMENTS (Requests now use offering_id + reg_type_id)
+--------------------------------------------------
+INSERT INTO enrollments (
+  student_id,
+  offering_id,
+  reg_type_id,
+  intent,
+  status,
+  requested_at
+) VALUES
+
+-- Amit Sharma
+(5, 1, 3, 'major', 'pending', NOW()),
+(5, 2, 3, 'major', 'pending', NOW()),
+
+-- Neha Verma
+(6, 1, 3, 'major', 'pending', NOW()),
+(6, 2, 3, 'minor', 'pending', NOW()),
+
+-- Ravi Kumar
+(7, 3, 3, 'major', 'pending', NOW()),
+
+-- Priya Singh
+(8, 3, 3, 'elective', 'pending', NOW()),
+
+-- Arjun Das
+(9, 1, 3, 'major', 'pending', NOW()),
+(9, 2, 3, 'major', 'pending', NOW());
 
 SET FOREIGN_KEY_CHECKS = 1;
