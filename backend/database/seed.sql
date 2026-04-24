@@ -56,6 +56,9 @@ INSERT INTO courses (course_id, course_code, title, credits, department) VALUES
 (2, 'CS610', 'Programming for Performance',                   9, 'CSE'),
 (3, 'CE683', 'Humans, Environment and Sustainable Development', 9, 'CE');
 
+INSERT INTO courses (course_id, course_code, title, credits, department) VALUES
+(4, 'CS315', 'DataBase Systems', 9, 'CSE');
+
 -- -------------------------------------------------------
 -- PREREQUISITES
 -- CS610 requires CS371 to be completed first

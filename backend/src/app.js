@@ -33,6 +33,18 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'UP', message: 'Server is running smoothly' });
 });
 
+// Get all courses
+app.get('/getCourses', async (req, res) => {
+    try {
+        const { getPool } = require('./db/pool');
+        const pool = getPool();
+        const [courses] = await pool.query('SELECT * FROM courses');
+        res.json(courses);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Mounting your feature-specific routes
 // This prefix means all course routes will start with /api/courses
 app.use('/api/courses', courseRoutes);
