@@ -16,12 +16,12 @@ INSERT INTO users (user_id, username, email, password_hash, role) VALUES
 -- -------------------------------------------------------
 -- STUDENT PROFILES
 -- -------------------------------------------------------
-INSERT INTO student_profiles (user_id, name, roll_no, department, cpi) VALUES
-(5, 'Durba',     '200101', 'CSE', 8.5),
-(6, 'Pallavi',   '200102', 'CSE', 8.0),
-(7, 'Jyothika',  '200103', 'CSE', 8.8),
-(8, 'Aayushman', '200104', 'CE',  8.2),
-(9, 'bob', '000000', 'XYZ', 7.0);
+INSERT INTO student_profiles (user_id, name, roll_no, department, year, cpi) VALUES
+(5, 'Durba',     '200101', 'CSE', 3, 8.5),
+(6, 'Pallavi',   '200102', 'CSE', 3, 8.0),
+(7, 'Jyothika',  '200103', 'CSE', 3, 8.8),
+(8, 'Aayushman', '200104', 'CE',  3, 8.2),
+(9, 'bob', '000000', 'XYZ', 3, 7.0);
 
 -- -------------------------------------------------------
 -- PROFESSOR PROFILES

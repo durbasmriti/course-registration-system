@@ -34,6 +34,7 @@ CREATE TABLE student_profiles (
   name       VARCHAR(255) NOT NULL,
   roll_no    VARCHAR(50) UNIQUE NOT NULL,
   department VARCHAR(100),
+  year       INT,
   cpi        DECIMAL(4,2),
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;

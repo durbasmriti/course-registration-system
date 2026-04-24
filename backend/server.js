@@ -5,9 +5,6 @@ require('dotenv').config();
 
 const app = require('./src/app');
 
-app.use(cors());
-app.use(express.json());
-
 const { getPool } = require('./src/db/pool');
 const pool = getPool();
 
@@ -21,13 +18,6 @@ const pool = getPool();
   }
 })();
 
-// REMOVE dummy data later (keep for now if needed)
-const courses = [
-  { id: 'CE371', name: 'DESIGN OF REINFORCED CONCRETE STRUCTURES', instructor: 'VINAY KUMAR GUPTA', credits: 9, status: 'Form Submitted', type: 'DE' },
-  { id: 'CE683', name: 'HUMANS, ENVIRONMENT AND SUSTAINABLE DEV', instructor: 'MANOJ TIWARI', credits: 9, status: 'Form Submitted', type: 'DE' },
-  { id: 'CS610', name: 'PROGRAMMING FOR PERFORMANCE', instructor: 'SWARNENDU BISWAS', credits: 9, status: 'Form Submitted', type: 'DE' }
-];
-
 // REAL DB API
 app.get('/test-db', async (req, res) => {
   try {
@@ -37,7 +27,6 @@ app.get('/test-db', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 const PORT = Number(process.env.PORT) || 5000;
 

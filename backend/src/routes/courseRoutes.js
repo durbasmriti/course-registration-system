@@ -4,34 +4,21 @@ const router = express.Router();
 
 const {
   getCourses,
-  requestCourseController
+  requestCourseController,
+  updateRulesController,
+  runAllocationController
 } = require('../controllers/courseController');
 
 // GET all courses
 router.get('/', getCourses);
 
 // student-> request course
-router.post('/request', requestCourseController);
+router.post('/request', requestCourseController); // working
 
 // prof -> set weights and max_seats
-router.put('/offering/:id/rules', async (req, res) => {
-    try {
-        const { rules, max_seats } = req.body;
-        await updateOfferingRules(req.params.id, rules, max_seats);
-        res.json({ message: "Rules updated successfully" });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.put('/offering/:id/rules', updateRulesController);
 
 // admin -> run allocation
-router.post('/offering/:id/allocate', async (req, res) => {
-    try {
-        await processAllocations(req.params.id);
-        res.json({ message: "Allocation process complete" });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+router.post('/offering/:id/allocate', runAllocationController);
 
 module.exports = router;
