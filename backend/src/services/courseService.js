@@ -98,12 +98,12 @@ const updateOfferingRules = async (offeringId, rules, maxSeats) => {
         // Update or Insert weights
         await connection.query(
             `INSERT INTO priority_rules (course_id, weight_cpi, weight_year, weight_dept_match) 
-             VALUES (?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE 
-             weight_cpi = VALUES(weight_cpi), 
-             weight_year = VALUES(weight_year), 
-             weight_dept_match = VALUES(weight_dept_match)`,
-            [course_id, rules.cpi, rules.year, rules.dept]
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE 
+            weight_cpi = VALUES(weight_cpi), 
+            weight_year = VALUES(weight_year), 
+            weight_dept_match = VALUES(weight_dept_match)`,
+            [course_id, rules.cpi, rules.year, rules.dept] // Ensure rules.dept is passed from frontend
         );
 
         await connection.commit();
@@ -127,10 +127,11 @@ const processAllocations = async (offeringId) => {
             SELECT 
                 r.student_id,
                 ((sp.cpi * pr.weight_cpi) + (sp.year * pr.weight_year) + 
-                (IF(sp.department = co.department, 1, 0) * pr.weight_dept_match)) AS score
+                (IF(sp.department = c.department, 1, 0) * pr.weight_dept_match)) AS score
             FROM enrollments r
             JOIN student_profiles sp ON r.student_id = sp.user_id
             JOIN course_offerings co ON r.offering_id = co.offering_id
+            JOIN courses c ON co.course_id = c.course_id -- Need this for department
             JOIN priority_rules pr ON co.course_id = pr.course_id
             WHERE r.offering_id = ?
             ORDER BY score DESC, r.requested_at ASC

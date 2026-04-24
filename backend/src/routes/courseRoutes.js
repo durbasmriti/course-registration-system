@@ -12,13 +12,13 @@ const {
 // GET all courses
 router.get('/', getCourses);
 
-// student-> request course
-router.post('/request', requestCourseController); // working
+// Student only: Request a course
+router.post('/request', requestCourseController);
 
-// prof -> set weights and max_seats
-router.put('/offering/:id/rules', updateRulesController);
+// Professor only: Set weights and max_seats
+router.put('/offering/:offering_id/rules', updateRulesController);  // working
 
-// admin -> run allocation
-router.post('/offering/:id/allocate', runAllocationController);
+// Admin or Professor: Run allocation
+router.post('/offering/:offering_id/allocate', runAllocationController);
 
 module.exports = router;
