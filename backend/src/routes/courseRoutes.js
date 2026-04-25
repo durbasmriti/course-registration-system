@@ -4,16 +4,24 @@ const router = express.Router();
 
 const {
   getCourses,
+  getProfessorCoursesController,
   requestCourseController,
   updateRulesController,
   runAllocationController,
   addCourseController,
   addPrerequisiteController,
-  getStudentEnrollmentsController
+  getStudentEnrollmentsController,
+  getProfessorRequestsController
 } = require('../controllers/courseController');
 
 // GET all courses
 router.get('/', getCourses); // working  // working
+
+// Professor: Get only the courses they coordinate
+router.get('/professor/courses', getProfessorCoursesController);
+
+// Professor: Get incoming requests for their courses
+router.get('/professor/requests', getProfessorRequestsController);
 
 // Student: Get their enrollments and applied credits
 router.get('/student-enrollments', getStudentEnrollmentsController);

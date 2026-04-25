@@ -12,7 +12,7 @@ export default function ProfessorPrerequisites() {
     setMessage(null);
     setError(null);
     try {
-      await professorService.setPrerequisite({ course_id, prereq_course_id });
+      await professorService.setPrerequisite(course_id, prereq_course_id);
       setMessage(`Recorded: ${prereq_course_id} is a prerequisite for ${course_id}.`);
       setPrereq('');
     } catch (err) {

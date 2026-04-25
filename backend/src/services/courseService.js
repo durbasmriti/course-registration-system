@@ -24,6 +24,37 @@ const getAllCourses = async () => {
   }
 };
 
+const getProfessorCourses = async (professorId) => {
+    const pool = getPool();
+    try {
+        const [rows] = await pool.query(
+            `SELECT 
+                c.course_id,
+                c.course_code,
+                c.title,
+                c.credits,
+                c.department AS offering_dept,
+                co.offering_id,
+                co.max_seats,
+                co.professor_id,
+                p.name AS instructor,
+                a.academic_year,
+                a.semester
+             FROM course_offerings co
+             JOIN courses c ON co.course_id = c.course_id
+             JOIN academics a ON co.academic_id = a.academic_id
+             LEFT JOIN professor_profiles p ON co.professor_id = p.user_id
+                         WHERE co.professor_id = ?
+                             AND a.is_active = TRUE
+             ORDER BY a.is_active DESC, a.academic_year DESC, a.semester DESC, c.course_code ASC`,
+            [professorId]
+        );
+        return rows;
+    } catch (err) {
+        throw new Error(`Database error: ${err.message}`);
+    }
+};
+
 // check if student has completed all pre-req
 const checkPrerequisites = async (userId, offeringId) => {
     const pool = getPool();
@@ -199,7 +230,7 @@ const processAllocations = async (offeringId) => {
 };
 
 // prof -> add new course offering
-const addCourse = async (professorId, courseId, academicId, maxSeats = 30) => {
+const addCourse = async (professorId, courseCode, title, credits, department, maxSeats = 30) => {
     const pool = getPool();
     const connection = await pool.getConnection();
     try {
@@ -214,32 +245,42 @@ const addCourse = async (professorId, courseId, academicId, maxSeats = 30) => {
             throw new Error('Invalid professor ID');
         }
 
-        // 2. Verify course exists
-        const [[course]] = await connection.query(
-            'SELECT course_id FROM courses WHERE course_id = ?',
-            [courseId]
-        );
-        if (!course) {
-            throw new Error('Course not found');
-        }
-
-        // 3. Verify academic period exists
+        // 2. Find the active academic period
         const [[academic]] = await connection.query(
-            'SELECT academic_id FROM academics WHERE academic_id = ?',
-            [academicId]
+            'SELECT academic_id FROM academics WHERE is_active = TRUE ORDER BY academic_id DESC LIMIT 1'
         );
         if (!academic) {
-            throw new Error('Academic period not found');
+            throw new Error('No active academic period found');
         }
 
-        // 4. Create course offering
+        // 3. Find or create the base course
+        const [[existingCourse]] = await connection.query(
+            'SELECT course_id FROM courses WHERE course_code = ? LIMIT 1',
+            [courseCode]
+        );
+
+        let courseId = existingCourse?.course_id;
+        if (!courseId) {
+            const [insertResult] = await connection.query(
+                'INSERT INTO courses (course_code, title, credits, department) VALUES (?, ?, ?, ?)',
+                [courseCode, title, credits, department]
+            );
+            courseId = insertResult.insertId;
+        } else {
+            await connection.query(
+                'UPDATE courses SET title = ?, credits = ?, department = ? WHERE course_id = ?',
+                [title, credits, department, courseId]
+            );
+        }
+
+        // 4. Create course offering for the professor in the active academic period
         const result = await connection.query(
             'INSERT INTO course_offerings (course_id, professor_id, academic_id, max_seats) VALUES (?, ?, ?, ?)',
-            [courseId, professorId, academicId, maxSeats]
+            [courseId, professorId, academic.academic_id, maxSeats]
         );
 
         await connection.commit();
-        return { offering_id: result[0].insertId, message: 'Course offering created successfully' };
+        return { offering_id: result[0].insertId, course_id: courseId, message: 'Course offering created successfully' };
     } catch (err) {
         await connection.rollback();
         throw err;
@@ -249,39 +290,53 @@ const addCourse = async (professorId, courseId, academicId, maxSeats = 30) => {
 };
 
 // prof -> add prerequisite for a course
+const resolveCourseId = async (connection, identifier) => {
+    const raw = String(identifier ?? '').trim();
+    if (!raw) return null;
+
+    if (/^\d+$/.test(raw)) {
+        const [[courseById]] = await connection.query(
+            'SELECT course_id FROM courses WHERE course_id = ? LIMIT 1',
+            [Number(raw)]
+        );
+        if (courseById) return courseById.course_id;
+    }
+
+    const [[courseByCode]] = await connection.query(
+        'SELECT course_id FROM courses WHERE UPPER(course_code) = ? LIMIT 1',
+        [raw.toUpperCase()]
+    );
+    return courseByCode?.course_id ?? null;
+};
+
 const addPrerequisite = async (courseId, prerequisiteId) => {
     const pool = getPool();
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
 
+        const resolvedCourseId = await resolveCourseId(connection, courseId);
+        const resolvedPrerequisiteId = await resolveCourseId(connection, prerequisiteId);
+
         // 1. Verify course exists
-        const [[course]] = await connection.query(
-            'SELECT course_id FROM courses WHERE course_id = ?',
-            [courseId]
-        );
-        if (!course) {
+        if (!resolvedCourseId) {
             throw new Error('Course not found');
         }
 
         // 2. Verify prerequisite course exists
-        const [[prerequisite]] = await connection.query(
-            'SELECT course_id FROM courses WHERE course_id = ?',
-            [prerequisiteId]
-        );
-        if (!prerequisite) {
+        if (!resolvedPrerequisiteId) {
             throw new Error('Prerequisite course not found');
         }
 
         // 3. Check if same course
-        if (courseId === prerequisiteId) {
+        if (resolvedCourseId === resolvedPrerequisiteId) {
             throw new Error('A course cannot be its own prerequisite');
         }
 
         // 4. Check if prerequisite already exists
         const [[existing]] = await connection.query(
             'SELECT * FROM prerequisites WHERE course_id = ? AND prerequisite_id = ?',
-            [courseId, prerequisiteId]
+            [resolvedCourseId, resolvedPrerequisiteId]
         );
         if (existing) {
             throw new Error('This prerequisite already exists for the course');
@@ -290,7 +345,7 @@ const addPrerequisite = async (courseId, prerequisiteId) => {
         // 5. Insert prerequisite
         await connection.query(
             'INSERT INTO prerequisites (course_id, prerequisite_id) VALUES (?, ?)',
-            [courseId, prerequisiteId]
+            [resolvedCourseId, resolvedPrerequisiteId]
         );
 
         await connection.commit();
@@ -330,5 +385,4 @@ const getStudentEnrollments = async (userId) => {
     }
 };
 
-
-module.exports = { getAllCourses, requestCourse, updateOfferingRules, processAllocations, addCourse, addPrerequisite, getStudentEnrollments };
+module.exports = { getAllCourses, getProfessorCourses, requestCourse, updateOfferingRules, processAllocations, addCourse, addPrerequisite, getStudentEnrollments };

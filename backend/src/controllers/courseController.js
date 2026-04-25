@@ -1,6 +1,7 @@
 //backend/src/controller/courseController.js
 const {
   getAllCourses,
+  getProfessorCourses,
   requestCourse,
   updateOfferingRules,
   processAllocations,
@@ -12,6 +13,21 @@ const {
 const getCourses = async (req, res) => {
   try {
     const courses = await getAllCourses();
+    res.json(courses);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const getProfessorCoursesController = async (req, res) => {
+  try {
+    const professorId = req.query.user_id || req.headers['x-user-id'] || req.headers['user-id'];
+
+    if (!professorId) {
+      return res.status(400).json({ message: 'Professor ID missing' });
+    }
+
+    const courses = await getProfessorCourses(professorId);
     res.json(courses);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -106,15 +122,23 @@ const runAllocationController = async (req, res) => {
 // POST /api/courses/add
 const addCourseController = async (req, res) => {
   try {
-    const { professor_id, course_id, academic_id, max_seats } = req.body;
+    const professor_id = req.body.professor_id || req.headers['x-user-id'] || req.headers['user-id'];
+    const { course_code, course_name, course_credit, offering_dept, max_seats } = req.body;
 
-    if (!professor_id || !course_id || !academic_id) {
+    if (!professor_id || !course_code || !course_name || !course_credit || !offering_dept) {
       return res.status(400).json({
-        message: "Missing required fields: professor_id, course_id, academic_id"
+        message: "Missing required fields: professor_id, course_code, course_name, course_credit, offering_dept"
       });
     }
 
-    const result = await addCourse(professor_id, course_id, academic_id, max_seats);
+    const result = await addCourse(
+      professor_id,
+      String(course_code).trim().toUpperCase(),
+      String(course_name).trim(),
+      Number(course_credit),
+      String(offering_dept).trim().toUpperCase(),
+      max_seats
+    );
     res.status(201).json(result);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -125,15 +149,15 @@ const addCourseController = async (req, res) => {
 const addPrerequisiteController = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const { prerequisite_id } = req.body;
+    const prerequisiteId = req.body?.prerequisite_id;
 
-    if (!courseId || !prerequisite_id) {
+    if (!courseId || !prerequisiteId) {
       return res.status(400).json({
         message: "Missing required fields: courseId in params, prerequisite_id in body"
       });
     }
 
-    await addPrerequisite(parseInt(courseId), prerequisite_id);
+    await addPrerequisite(courseId, prerequisiteId);
     res.status(201).json({ message: "Prerequisite added successfully" });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -156,13 +180,52 @@ const getStudentEnrollmentsController = async (req, res) => {
   }
 };
 
+const getProfessorRequestsController = async (req, res) => {
+  try {
+    const professorId = req.query.user_id || req.headers['x-user-id'] || req.headers['user-id'];
+
+    if (!professorId) {
+      return res.status(400).json({ message: 'Professor ID missing' });
+    }
+
+    const { getPool } = require('../db/pool');
+    const pool = getPool();
+    const [rows] = await pool.query(
+      `SELECT 
+         e.student_id,
+         sp.roll_no,
+         sp.name,
+         co.offering_id,
+         c.course_code AS course_id,
+         c.title AS course_name,
+         sp.cpi,
+         e.status,
+         e.intent,
+         e.requested_at
+       FROM enrollments e
+       JOIN course_offerings co ON e.offering_id = co.offering_id
+       JOIN courses c ON co.course_id = c.course_id
+       JOIN student_profiles sp ON e.student_id = sp.user_id
+       WHERE co.professor_id = ?
+       ORDER BY e.requested_at DESC`,
+      [professorId]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 module.exports = {
   getCourses,
+  getProfessorCoursesController,
   requestCourseController,
   updateRulesController,
   runAllocationController,
   addCourseController,
   addPrerequisiteController,
-  getStudentEnrollmentsController
+  getStudentEnrollmentsController,
+  getProfessorRequestsController
 };

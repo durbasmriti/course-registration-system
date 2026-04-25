@@ -2,25 +2,34 @@ import { useState } from 'react';
 import { professorService } from '../../services/api';
 
 const emptyForm = {
-  course_id: '',
+  course_code: '',
   course_name: '',
   course_credit: 9,
   max_seats: 40,
   offering_dept: '',
 };
 
-export default function ProfessorCreateCourse() {
+export default function ProfessorCreateCourse({ user }) {
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const professorId = user?.externalId || user?.staffId || user?.userId;
 
   const submit = async (e) => {
     e.preventDefault();
     setMessage(null);
     setError(null);
     try {
-      await professorService.createCourse(form);
-      setMessage(`Course ${form.course_id} saved (backend must implement POST /api/course).`);
+      await professorService.createCourse({
+        professor_id: professorId,
+        course_code: form.course_code,
+        course_name: form.course_name,
+        course_credit: form.course_credit,
+        offering_dept: form.offering_dept,
+        max_seats: form.max_seats,
+      });
+      setMessage(`Course ${form.course_code} saved and added to My Courses.`);
+      window.dispatchEvent(new Event('professor-course-saved'));
       setForm(emptyForm);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Save failed.');
@@ -37,12 +46,12 @@ export default function ProfessorCreateCourse() {
       {error && <p className="panel-error">{error}</p>}
       <form className="stack-form" onSubmit={submit}>
         <label className="form-label">
-          Course ID
+          Course code
           <input
             className="form-input"
             required
-            value={form.course_id}
-            onChange={(e) => setForm({ ...form, course_id: e.target.value.toUpperCase() })}
+            value={form.course_code}
+            onChange={(e) => setForm({ ...form, course_code: e.target.value.toUpperCase() })}
             placeholder="e.g. CE371"
           />
         </label>
