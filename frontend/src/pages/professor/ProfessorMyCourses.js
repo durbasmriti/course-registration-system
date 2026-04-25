@@ -65,7 +65,7 @@ export default function ProfessorMyCourses({ user }) {
         <table className="data-table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Course code</th>
               <th>Name</th>
               <th>Credits</th>
               <th>Max seats</th>
@@ -81,13 +81,13 @@ export default function ProfessorMyCourses({ user }) {
               </tr>
             ) : (
               visibleCourses.map((c) => {
-              const id = c.course_id || c.id;
+              const id = c.course_code || c.course_id || c.id;
               return (
                 <tr key={id}>
                   <td>
                     <strong>{id}</strong>
                   </td>
-                  <td>{c.course_name || c.name}</td>
+                  <td>{c.title || c.course_name || c.name}</td>
                   <td>{c.course_credit ?? c.credits}</td>
                   <td>{c.max_seats ?? 'N/A'}</td>
                   <td>{c.offering_dept ?? c.dept}</td>

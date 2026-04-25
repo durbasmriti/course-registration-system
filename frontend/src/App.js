@@ -33,25 +33,15 @@ const PROFESSOR_VIEWS = {
   'priority-rules': ProfessorPriorityRules,
   prerequisites: ProfessorPrerequisites,
   'incoming-requests': ProfessorIncoming,
-  'prof-profile': () => (
-    <StudentPlaceholder title="Instructor Profile">
+  'prof-profile': ({ user }) => (
+    <StudentPlaceholder title="Instructor Profile" user={user} profileType="professor">
       Faculty contact and department information.
-    </StudentPlaceholder>
-  ),
-  'prof-password': () => (
-    <StudentPlaceholder title="Change Password">
-      Password changes will be handled by your institute authentication service.
     </StudentPlaceholder>
   ),
   about: About,
 };
 
 const ADMIN_VIEWS = {
-  'admin-password': () => (
-    <StudentPlaceholder title="Change Password">
-      Password changes will be handled by your institute authentication service.
-    </StudentPlaceholder>
-  ),
   about: About,
 };
 
