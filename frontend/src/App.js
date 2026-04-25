@@ -238,17 +238,7 @@ function App() {
         <div className="login-box">
           <img src="/logo_black.png" alt="" className="login-logo" />
           <h2>Course Registration Portal</h2>
-          <p className="login-sub">
-            {forgotPasswordMode ? (
-              <>Enter your login ID to request a reset email.</>
-            ) : (
-              <>
-                Logins: <code>admin</code>, <code>arnab</code>, <code>ritwij</code>,{' '}
-                <code>durbasmriti</code>, <code>pallavi</code>, <code>jyothika</code>,{' '}
-                <code>aayushman</code>
-              </>
-            )}
-          </p>
+          
           <form
             className="login-form"
             onSubmit={forgotPasswordMode ? handleResetPassword : handleLogin}
@@ -269,11 +259,7 @@ function App() {
                   value={credentials.password}
                   onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
                 />
-                <div className="login-forgot-row">
-                  <button type="button" className="login-forgot-link" onClick={handleForgotPasswordClick}>
-                    Forgot password?
-                  </button>
-                </div>
+
               </>
             )}
             {forgotPasswordMode && (

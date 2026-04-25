@@ -2,26 +2,26 @@
 -- USERS
 -- -------------------------------------------------------
 INSERT INTO users (user_id, username, email, password_hash, role) VALUES
-(1, 'admin',        'admin@iitk.ac.in',        '$2b$10$OD8q9f1tpIi8G4RfoyV3suXH5xwuOK9c6mfFPfC6SM9bUN8v9YE0u', 'admin'),
-(2, 'arnab',        'arnab@iitk.ac.in',        '$2b$10$9pvVCQ7v0eY354DLm7jqy.T/XxhPhBMe97MKT0Cp1fxwgLHUiIdvC', 'professor'),
-(3, 'ritwij',       'ritwij@iitk.ac.in',       '$2b$10$PulLMyBxjR6Vvzx8Lewn6.LMjSBehkLzXH4Jts.sgSCt85Gk1d7JW', 'professor'),
-(4, 'durbasmriti',  'durbasmriti@iitk.ac.in',  '$2b$10$JB3nrzvK5fn3H8DWoPxLTuOlFBqZOgYDMua4T9N1lZMheVOG8eYBy', 'student'),
-(5, 'pallavi',      'pallavi@iitk.ac.in',      '$2b$10$7zQcGkBqX5pV8unWEVEXSOSvmdIynRuLp.M55rt6VKs8eUoPv4.bu', 'student'),
-(6, 'jyothika',     'jyothika@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(7, 'aayushman',    'aayushman@iitk.ac.in',    '$2b$10$KZ/DmaE2BswTPTyASFqA0.deBofgEIDUXbQdJZctkAc2fYKbfAZp2', 'student'),
-(8, 'arnav',        'arnav@iitk.ac.in',        '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(9, 'satyarth',     'satyarth@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(10, 'shreya',      'shreya@iitk.ac.in',      '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(11, 'tanmay',      'tanmay@iitk.ac.in',      '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(12, 'priyanshu',   'priyanshu@iitk.ac.in',   '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(13, 'ananya',      'ananya@iitk.ac.in',      '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(14, 'philip',       'philip@iitk.ac.in',       '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'professor'),
-(15, 'sudharsana',      'sudharsana@iitk.ac.in',      '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'professor'),
-(16, 'baswana',     'baswana@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'professor'),
-(17, 'preeti',     'preeti@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'professor'),
-(18, 'gayathri',     'gayathri@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(19, 'manas',     'manas@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(20, 'sneha',     'sneha@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student');
+(1, 'admin',        'admin@iitk.ac.in',        '$2b$10$MhexI01yOf7vtax4xGlOYOmZmDuzehEPlh4UpfDGNd8rs3opoHCHm', 'admin'),
+(2, 'arnab',        'arnab@iitk.ac.in',        '$2b$10$GOtD0YuMCGRDBoadzwtkbOa83nMXL7U2h0XLbeZZ5JrHD5yrNH4XK', 'professor'),
+(3, 'ritwij',       'ritwij@iitk.ac.in',       '$2b$10$BZaLSu4TNQsgHr.7SsU.iukcTOdS19up0myuqnKmTTH3c9x3eqxzu', 'professor'),
+(4, 'durbasmriti',  'durbasmriti@iitk.ac.in',  '$2b$10$um/XgDk/20jz/SqRkPaAfeTBcWnLf2bo/MPmbRHRDFMUznBxxG66e', 'student'),
+(5, 'pallavi',      'pallavi@iitk.ac.in',      '$2b$10$SwkqnompVxlcB3R.uC/bB.7.3P3Q8s79CYR./kW3Hf3LV7DOBVwSu', 'student'),
+(6, 'jyothika',     'jyothika@iitk.ac.in',     '$2b$10$vOpIiGzAPEdg7/y6HnKBH.DJkeCLlWz36Gvcvm93lWANfzrbah0lO', 'student'),
+(7, 'aayushman',    'aayushman@iitk.ac.in',    '$2b$10$h/Yhuw/mCjRD0t0cBwOJTOGktIaqofqgilMZpkK.zuvf9gN4hpEqq', 'student'),
+(8, 'arnav',        'arnav@iitk.ac.in',        '$2b$10$/hf2VOGJ3vFb5.j9jqaQtes9GY/NPtNCDUQrXZwVndJQiB8whddk2', 'student'),
+(9, 'satyarth',     'satyarth@iitk.ac.in',     '$2b$10$ooUkka2aww1nKgJVniTpW.OiMSYBqAkOCA6vVZnGdq9QzVh8Km8sO', 'student'),
+(10, 'shreya',      'shreya@iitk.ac.in',      '$2b$10$CeroS4m/VtfMwbeuetTnc.vefd0uLLlQsDteKqRV.uXIc9p8LkYqq', 'student'),
+(11, 'tanmay',      'tanmay@iitk.ac.in',      '$2b$10$DgGr/f9xmVvAElbe9YdYDO5ykOPa1HJpmi7ln2EXzKr1/VsQB73Ja', 'student'),
+(12, 'priyanshu',   'priyanshu@iitk.ac.in',   '$2b$10$KIpEt4P8SqEgctW8xpaw1etvM7K8D15WdqmerBQ6MMbdEvw/hBsDK', 'student'),
+(13, 'ananya',      'ananya@iitk.ac.in',      '$2b$10$EeRcKL455rCAl17U4MNFXe7MCsPuGajLDbgeJouHCl/EcPdcSQaXC', 'student'),
+(14, 'philip',       'philip@iitk.ac.in',       '$2b$10$bYat3B6Rw1XCr.AWEP4fy.N5EZWrJenOmuemE5M3tfw135NmYuP3O', 'professor'),
+(15, 'sudharsana',      'sudharsana@iitk.ac.in',      '$2b$10$nWPB2k3LDc8dwyqiRm9Fy.3GdUtrVPZOwq5HUIz9Alrqc.64v5qmO', 'professor'),
+(16, 'baswana',     'baswana@iitk.ac.in',     '$2b$10$L5PMMh.E8sWeuStL1LR4JeYTErS7gGhuqkNhSZ2520ce2TYbjV3EK', 'professor'),
+(17, 'preeti',     'preeti@iitk.ac.in',     '$2b$10$hiOOUL6npx717Z9/rbf8uu5eWGPf/OAe858lDltdht67pS4qiTZ/G', 'professor'),
+(18, 'gayathri',     'gayathri@iitk.ac.in',     '$2b$10$eGMQzhZXAMvCVeaWIgZkHu7shOk0oTfk3YnbQh9GEkt1zhdjEZE7e', 'student'),
+(19, 'manas',     'manas@iitk.ac.in',     '$2b$10$K0AGuYbLwO/9vx.89mvqSOOAQHMhDfhBFauyhrLKGhn2Qpx.4dYPO', 'student'),
+(20, 'sneha',     'sneha@iitk.ac.in',     '$2b$10$wdHrRaBUxE2ZRZVFu9iujea4g8jRzOlol1MqkImoLvHMgohS5xrB2', 'student');
 
 -- -------------------------------------------------------
 -- STUDENT PROFILES
