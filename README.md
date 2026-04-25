@@ -10,7 +10,7 @@ The system uses role-based access control to provide secure and relevant access 
 
 Durbasmriti Saha (230393)
 
-Pallavi Reddi (230850)
+Reddi Pallavi (230850)
 
 Jyothika Seru (230946)
 
