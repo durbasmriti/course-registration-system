@@ -8,7 +8,7 @@ const {
   updateRulesController,
   runAllocationController,
   addCourseController,
-  addPrerequisiteController
+  addPrerequisiteController, getProfileController
 } = require('../controllers/courseController');
 
 // GET all courses
@@ -32,8 +32,6 @@ router.post('/add', addCourseController); // working
 router.post('/:courseId/prerequisites', addPrerequisiteController); // working
 
 // login api
-
-// get profile api
 
 
 

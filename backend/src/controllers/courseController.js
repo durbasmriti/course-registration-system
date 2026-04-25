@@ -111,6 +111,9 @@ const addPrerequisiteController = async (req, res) => {
   }
 };
 
+
+
+
 module.exports = {
   getCourses,
   requestCourseController,

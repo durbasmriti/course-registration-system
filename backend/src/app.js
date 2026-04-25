@@ -6,7 +6,7 @@ require('dotenv').config();
 
 // Import Routes
 const courseRoutes = require('./routes/courseRoutes');
-// const studentRoutes = require('./src/routes/studentRoutes'); // For later
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -45,10 +45,12 @@ app.get('/getCourses', async (req, res) => {
     }
 });
 
-// Mounting your feature-specific routes
+
 // This prefix means all course routes will start with /api/courses
 app.use('/api/courses', courseRoutes);
 
+// "Every route inside userRoutes should start with /api/users"
+app.use('/api/users', userRoutes);
 // --- Error Handling Middleware ---
 
 // Catch-all for 404 errors

@@ -302,4 +302,6 @@ const addPrerequisite = async (courseId, prerequisiteId) => {
     }
 };
 
-module.exports = { getAllCourses, requestCourse, updateOfferingRules, processAllocations, addCourse, addPrerequisite };
+
+
+module.exports = { getAllCourses, requestCourse, updateOfferingRules, processAllocations, addCourse, addPrerequisite};
