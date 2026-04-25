@@ -36,16 +36,31 @@ export default function StudentPlaceholder({ title, children, user }) {
     };
   }, [userId]);
 
-  const profileRows = useMemo(() => [
-    { label: 'Name', value: profileValue(profile?.name || user?.displayName || user?.name) },
-    { label: 'Email', value: profileValue(profile?.email || user?.email) },
-    { label: 'Roll number', value: profileValue(profile?.roll_no || user?.rollNo || user?.externalId) },
-    { label: 'Branch', value: profileValue(profile?.department || user?.department || user?.branch) },
-    { label: 'Program', value: profileValue(user?.program, 'B.Tech') },
-    { label: 'Academic year', value: profileValue(profile?.academic_year || user?.academicYear || user?.academic_year) },
-    { label: 'CPI', value: profileValue(profile?.cpi || user?.cpi) },
-    { label: 'User ID', value: profileValue(profile?.user_id || user?.staffId || user?.externalId) },
-  ], [profile, user]);
+  const role = (user?.role || profile?.role || 'student').toLowerCase();
+
+  const profileRows = useMemo(() => {
+    if (role === 'professor') {
+      return [
+        { label: 'Name', value: profileValue(profile?.name || user?.displayName || user?.name) },
+        { label: 'Email', value: profileValue(profile?.email || user?.email) },
+        { label: 'Department', value: profileValue(profile?.department || user?.department || user?.branch) },
+        { label: 'Faculty ID', value: profileValue(profile?.user_id || user?.facultyId || user?.staffId || user?.externalId) },
+        { label: 'Username', value: profileValue(profile?.username || user?.name) },
+        { label: 'Role', value: profileValue(profile?.role || user?.role) },
+      ];
+    }
+
+    return [
+      { label: 'Name', value: profileValue(profile?.name || user?.displayName || user?.name) },
+      { label: 'Email', value: profileValue(profile?.email || user?.email) },
+      { label: 'Roll number', value: profileValue(profile?.roll_no || user?.rollNo || user?.externalId) },
+      { label: 'Branch', value: profileValue(profile?.department || user?.department || user?.branch) },
+      { label: 'Program', value: profileValue(user?.program, 'B.Tech') },
+      { label: 'Academic year', value: profileValue(profile?.academic_year || user?.academicYear || user?.academic_year) },
+      { label: 'CPI', value: profileValue(profile?.cpi || user?.cpi) },
+      { label: 'User ID', value: profileValue(profile?.user_id || user?.staffId || user?.externalId) },
+    ];
+  }, [profile, role, user]);
 
   return (
     <div className="content-panel student-profile-page">
@@ -55,7 +70,7 @@ export default function StudentPlaceholder({ title, children, user }) {
           <h1 className="content-title student-panel-title profile-title">{title}</h1>
           <p className="content-lead profile-lead">{children}</p>
         </div>
-        <span className="profile-chip">Student record</span>
+        <span className="profile-chip">{role === 'professor' ? 'Faculty record' : 'Student record'}</span>
       </section>
 
       <section className="profile-card">
