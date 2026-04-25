@@ -8,7 +8,20 @@ INSERT INTO users (user_id, username, email, password_hash, role) VALUES
 (4, 'durbasmriti',  'durbasmriti@iitk.ac.in',  '$2b$10$JB3nrzvK5fn3H8DWoPxLTuOlFBqZOgYDMua4T9N1lZMheVOG8eYBy', 'student'),
 (5, 'pallavi',      'pallavi@iitk.ac.in',      '$2b$10$7zQcGkBqX5pV8unWEVEXSOSvmdIynRuLp.M55rt6VKs8eUoPv4.bu', 'student'),
 (6, 'jyothika',     'jyothika@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
-(7, 'aayushman',    'aayushman@iitk.ac.in',    '$2b$10$KZ/DmaE2BswTPTyASFqA0.deBofgEIDUXbQdJZctkAc2fYKbfAZp2', 'student');
+(7, 'aayushman',    'aayushman@iitk.ac.in',    '$2b$10$KZ/DmaE2BswTPTyASFqA0.deBofgEIDUXbQdJZctkAc2fYKbfAZp2', 'student'),
+(8, 'arnav',        'arnav@iitk.ac.in',        '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(9, 'satyarth',     'satyarth@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(10, 'shreya',      'shreya@iitk.ac.in',      '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(11, 'tanmay',      'tanmay@iitk.ac.in',      '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(12, 'priyanshu',   'priyanshu@iitk.ac.in',   '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(13, 'ananya',      'ananya@iitk.ac.in',      '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(14, 'philip',       'philip@iitk.ac.in',       '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'professor'),
+(15, 'sudharsana',      'sudharsana@iitk.ac.in',      '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'professor'),
+(16, 'baswana',     'baswana@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'professor'),
+(17, 'preeti',     'preeti@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'professor'),
+(18, 'gayathri',     'gayathri@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(19, 'manas',     'manas@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(20, 'sneha',     'sneha@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student');
 
 -- -------------------------------------------------------
 -- STUDENT PROFILES
@@ -17,14 +30,27 @@ INSERT INTO student_profiles (user_id, name, roll_no, department, academic_year,
 (4, 'Durbasmriti', '200101', 'CSE', 3, 8.5),
 (5, 'Pallavi',     '200102', 'CSE', 3, 8.0),
 (6, 'Jyothika',    '200103', 'CSE', 3, 8.8),
-(7, 'Aayushman',   '200104', 'CE',  3, 8.2);
+(7, 'Aayushman',   '200104', 'CE',  3, 8.2),
+(8, 'Arnav',       '200105', 'MSE', 3, 7.5),
+(9, 'Satyarth',    '200106', 'ME', 3, 7.0),
+(10, 'Shreya',     '200107', 'CHM',  3, 8.1),
+(11, 'Tanmay',     '200108', 'CHE',  3, 7.9),
+(12, 'Priyanshu',   '200109', 'AE', 3, 8.4),
+(13, 'Ananya',      '200110', 'EE', 3, 8.6),
+(18, 'Gayathri',    '200111', 'EE', 3, 8.3),
+(19, 'Manas',       '200112', 'BSBE', 3, 7.8),
+(20, 'Sneha',       '200113', 'ECO', 3, 8.0);
 
 -- -------------------------------------------------------
 -- PROFESSOR PROFILES
 -- -------------------------------------------------------
 INSERT INTO professor_profiles (user_id, name, department) VALUES
 (2, 'Prof. Arnab', 'CSE'),
-(3, 'Prof. Ritwij', 'HSS');
+(3, 'Prof. Ritwij', 'HSS'),
+(14, 'Prof. Philip', 'DES'),
+(15, 'Prof. Sudharsana', 'ENG'),
+(16, 'Prof. Baswana', 'CSE'),
+(17, 'Prof. Preeti', 'CSE');
 
 -- -------------------------------------------------------
 -- ACADEMICS
@@ -49,17 +75,29 @@ INSERT INTO registration_types (reg_type_id, name) VALUES
 INSERT INTO courses (course_id, course_code, title, credits, department) VALUES
 (1, 'CS371', 'Design of Reinforced Concrete Structures',      9, 'CSE'),
 (2, 'CS610', 'Programming for Performance',                   9, 'CSE'),
-(3, 'CE683', 'Humans, Environment and Sustainable Development', 9, 'CE');
-
-INSERT INTO courses (course_id, course_code, title, credits, department) VALUES
-(4, 'CS315', 'DataBase Systems', 9, 'CSE');
+(3, 'CE683', 'Humans, Environment and Sustainable Development', 9, 'CE'),
+(4, 'CS315', 'DataBase Systems', 9, 'CSE'),
+(5, 'CS420', 'Artificial Intelligence', 9, 'CSE'),
+(6, 'CS430', 'Machine Learning', 9, 'CSE'),
+(7, 'ENG450', 'Academic Writing', 6, 'ENG'),
+(8, 'HSS310', 'Philosophy of Science', 6, 'HSS'),
+(9, 'DES220', 'Design Thinking', 6, 'DES'),
+(10, 'CHE350', 'Chemical Process Calculations', 9, 'CHE'),
+(11, 'AE410', 'Aerodynamics', 9, 'AE'),
+(12, 'EE330', 'Power Systems', 9, 'EE'),
+(13, 'BSBE310', 'Molecular Biology', 9, 'BSBE'),
+(14, 'ECO320', 'Microeconomics', 6, 'ECO'),
+(15, 'CS101', 'Introduction to Computer Science', 9, 'CSE');
 
 -- -------------------------------------------------------
 -- PREREQUISITES
 -- CS610 requires CS371 to be completed first
 -- -------------------------------------------------------
 INSERT INTO prerequisites (course_id, prerequisite_id) VALUES
-(2, 1);
+(2, 5),
+(1, 5),
+(4, 15);
+
 
 -- -------------------------------------------------------
 -- COURSE OFFERINGS
@@ -68,10 +106,21 @@ INSERT INTO prerequisites (course_id, prerequisite_id) VALUES
 --                  needed so transcript rows can reference it
 -- -------------------------------------------------------
 INSERT INTO course_offerings (offering_id, course_id, professor_id, academic_id, max_seats) VALUES
-(1, 1, 2, 2, 45),   -- CS371 | Prof. Arnab | sem2 2026
-(2, 2, 2, 2, 40),   -- CS610 | Prof. Arnab | sem2 2026
-(3, 3, 3, 2, 50),   -- CE683 | Prof. Ritwij | sem2 2026
-(4, 1, 2, 1, 45);   -- CS371 | Prof. Arnab | sem1 2025 (past — for transcripts)
+(1, 1, 2, 2, 15),   -- CS371 | Prof. Arnab | sem2 2026
+(2, 2, 2, 2, 20),   -- CS610 | Prof. Arnab | sem2 2026
+(3, 3, 3, 2, 30),   -- CE683 | Prof. Ritwij | sem2 2026
+(4, 1, 2, 1, 12),   -- CS371 | Prof. Arnab | sem1 2025 (past — for transcripts)
+(5, 4, 2, 2, 8),   -- CS315 | Prof. Arnab | sem2 2026
+(6, 5, 16, 2, 5),   -- CS420 | Prof. Baswana | sem2 2026
+(7, 6, 16, 2, 9),   -- CS430 | Prof. Baswana | sem2 2026
+(8, 7, 15, 2, 10),   -- ENG450 | Prof. Sudharsana | sem2 2026
+(9, 8, 3, 2, 30),    -- HSS310 | Prof. Ritwij | sem2 2026
+(10,9,14,2,30),      -- DES220 | Prof. Philip | sem2 2026
+(11,10,17,2,12),     -- CHE350 | Prof. Preeti | sem2 2026
+(12,11,17,2,40),     -- AE410 | Prof. Preeti | sem2 2026
+(13,12,17,2,60),     -- EE330 | Prof. Preeti | sem2 2026
+(14,13,17,2,40),     -- BSBE310 | Prof. Preeti | sem2 2026
+(15,14,17,2,17);     -- ECO320 | Prof. Preeti | sem2 2026
 
 -- -------------------------------------------------------
 -- PRIORITY RULES
@@ -87,10 +136,19 @@ INSERT INTO priority_rules (course_id, weight_cpi, weight_dept_match) VALUES
 -- Durba (5) and Pallavi (6) completed CS371 in sem1 2025 → cleared for CS610.
 -- -------------------------------------------------------
 INSERT INTO student_transcript (student_id, offering_id, grade, is_passed, completed_at) VALUES
-(4, 4, 8.5, TRUE,  '2025-11-30'),   -- Durbasmriti passed CS371 in sem1 2025
-(5, 4, 7.8, TRUE,  '2025-11-30'),   -- Pallavi     passed CS371 in sem1 2025
-(6, 4, 9.8, TRUE,  '2025-11-30'),   -- Jyothika    passed CS371 in sem1 2025
-(7, 4, 8.8, TRUE,  '2025-11-30');   -- Aayushman   passed CS371 in sem1 2025
+(4, 6, 8.5, TRUE,  '2025-11-30'),   -- Durbasmriti passed CS371 in sem1 2025
+(5, 6, 7.8, TRUE,  '2025-11-30'),   -- Pallavi     passed CS371 in sem1 2025
+(6, 6, 9.8, TRUE,  '2025-11-30'),   -- Jyothika    passed CS371 in sem1 2025
+(7, 6, 8.8, TRUE,  '2025-11-30'),   -- Aayushman   passed CS371 in sem1 2025
+(8, 6, 6.5, TRUE,  '2025-11-30');   -- Arnav       passed CS371 in sem1 2025
+(9, 6, 5.0, TRUE,  '2025-11-30');   -- Satyarth    passed CS371 in sem1 2025
+(10, 6, 4.0, FALSE, '2025-11-30');   -- Shreya      failed CS371 in sem1 2025
+(11, 6, 7.0, TRUE,  '2025-11-30');   -- Tanmay      passed CS371 in sem1 2025
+(12, 6, 8.0, FALSE,  '2025-11-30');   -- Priyanshu   failed CS371 in sem1 2025
+(13, 6, 9.0, TRUE,  '2025-11-30');   -- Ananya      passed CS371 in sem1 2025
+(18, 6, 8.2, FALSE,  '2025-11-30');   -- Gayathri    failed CS371 in sem1 2025
+(19, 6, 7.5, TRUE,  '2025-11-30');   -- Manas       passed CS371 in sem1 2025
+(20, 6, 6.8, TRUE,  '2025-11-30');   -- Sneha       passed CS371 in sem1 2025
 
 -- -------------------------------------------------------
 -- ENROLLMENTS (current semester requests)
