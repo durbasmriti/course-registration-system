@@ -2,6 +2,16 @@ const { getPool } = require('../db/pool');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const ALLOWED_LOGIN_IDS = new Set([
+  'admin',
+  'arnab',
+  'ritwij',
+  'durbasmriti',
+  'pallavi',
+  'jyothika',
+  'aayushman',
+]);
+
 const getUserProfile = async (userId) => {
   const pool = getPool();
   
@@ -33,11 +43,16 @@ const getUserProfile = async (userId) => {
 
 const loginUser = async (username, password) => {
   const pool = getPool();
+  const normalizedUsername = String(username || '').trim().toLowerCase();
+
+  if (!ALLOWED_LOGIN_IDS.has(normalizedUsername)) {
+    throw new Error('Invalid username or password');
+  }
 
   // 1. Check if user exists
   const [userRows] = await pool.query(
-    'SELECT user_id, username, email, password_hash, role, is_active FROM users WHERE username = ?',
-    [username]
+    'SELECT user_id, username, email, password_hash, role, is_active FROM users WHERE LOWER(username) = ?',
+    [normalizedUsername]
   );
 
   if (userRows.length === 0) {

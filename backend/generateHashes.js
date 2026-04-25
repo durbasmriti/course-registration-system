@@ -3,14 +3,12 @@ const bcrypt = require('bcryptjs');
 // Define test users with their passwords
 const testUsers = [
   { username: 'admin', password: 'admin123' },
-  { username: 'Arnab', password: 'prof123' },
-  { username: 'ritwijb', password: 'prof123' },
-  { username: 'vinaykg', password: 'prof123' },
-  { username: 'durbasmriti', password: 'student123' },
-  { username: 'rpallavi', password: 'student123' },
-  { username: 'jyothika', password: 'student123' },
-  { username: 'aayushman', password: 'student123' },
-  { username: 'bob', password: 'student123' }
+  { username: 'arnab', password: 'arnab123' },
+  { username: 'ritwij', password: 'ritwij123' },
+  { username: 'durbasmriti', password: 'durbasmriti123' },
+  { username: 'pallavi', password: 'pallavi123' },
+  { username: 'jyothika', password: 'jyothika123' },
+  { username: 'aayushman', password: 'aayushman123' },
 ];
 
 // Generate hashes

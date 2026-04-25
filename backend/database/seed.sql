@@ -2,34 +2,29 @@
 -- USERS
 -- -------------------------------------------------------
 INSERT INTO users (user_id, username, email, password_hash, role) VALUES
-(1, 'admin',        'admin@iitk.ac.in',          '$2b$10$3IvxMI4oXRDOBP7BzyQM8OWJQDbsogZNBQN24CpDrmot/n9iYU3tS',  'admin'),
-(2, 'Arnab',        'arnabb@iitk.ac.in',          '$2b$10$t/pg.8G6HA4S7h4dsXsUlO37IL2ZYgIymG8WVt7Rj.I2gYMv4yq06',  'professor'),
-(3, 'ritwijb',      'ritwijb@iitk.ac.in',         '$2b$10$ZsFBxfGULLbwe4doql6WCeaB739s4QNM9YOZqyK83oUtN1O0DfSTC',  'professor'),
-(4, 'vinaykg',      'vinaykg@iitk.ac.in',         '$2b$10$ZKds0p5TLwCjUS.HwXd8zuPrVTx89pqeDe.sbP7zvbEMwV/9TO5i6',  'professor'),
-(5, 'durbasmriti',  'durbasmrit23@iitk.ac.in',    '$2b$10$KXRAabIwdYBddSVS8UisaeshNWYLDeGIaI8YxoApf0mvoOFKi2qaO',   'student'),
-(6, 'rpallavi',     'rpallavi23@iitk.ac.in',      '$2b$10$NKKgcnalnCxudpiFe55yjeVlh2jUgGpWB6B6c/KPuuzF4EviUkAVe',   'student'),
-(7, 'jyothika',     'serujy23@iitk.ac.in',        '$2b$10$UQ/mHZ2xtFta/Zx2xv0yEu415S4U7FeEqdMgot6V6LiuKP.CmtDHK',   'student'),
-(8, 'aayushman',    'aayushmank23@iitk.ac.in',    '$2b$10$GeBM3/F/pwJsXgtkKnMNHOuXegIJ6dWp6mAaiCVphs1KZc2uxg0.i',   'student'),
-(9, 'bob',    'bob23@iitk.ac.in',    '$2b$10$gmIPl7i/AErIb8cqmL/ppO30wNwfdc8B9k/s2Te71.u/YP48x5QJ.',   'student');
--- NOTE: removed user_id 9 — was referenced in enrollments but never defined.
+(1, 'admin',        'admin@iitk.ac.in',        '$2b$10$OD8q9f1tpIi8G4RfoyV3suXH5xwuOK9c6mfFPfC6SM9bUN8v9YE0u', 'admin'),
+(2, 'arnab',        'arnab@iitk.ac.in',        '$2b$10$9pvVCQ7v0eY354DLm7jqy.T/XxhPhBMe97MKT0Cp1fxwgLHUiIdvC', 'professor'),
+(3, 'ritwij',       'ritwij@iitk.ac.in',       '$2b$10$PulLMyBxjR6Vvzx8Lewn6.LMjSBehkLzXH4Jts.sgSCt85Gk1d7JW', 'professor'),
+(4, 'durbasmriti',  'durbasmriti@iitk.ac.in',  '$2b$10$JB3nrzvK5fn3H8DWoPxLTuOlFBqZOgYDMua4T9N1lZMheVOG8eYBy', 'student'),
+(5, 'pallavi',      'pallavi@iitk.ac.in',      '$2b$10$7zQcGkBqX5pV8unWEVEXSOSvmdIynRuLp.M55rt6VKs8eUoPv4.bu', 'student'),
+(6, 'jyothika',     'jyothika@iitk.ac.in',     '$2b$10$7YdIJczZkxro885qAD8bMuOnzZQFjwTa4.Q1RIsX2uev3CBSE9TQm', 'student'),
+(7, 'aayushman',    'aayushman@iitk.ac.in',    '$2b$10$KZ/DmaE2BswTPTyASFqA0.deBofgEIDUXbQdJZctkAc2fYKbfAZp2', 'student');
 
 -- -------------------------------------------------------
 -- STUDENT PROFILES
 -- -------------------------------------------------------
 INSERT INTO student_profiles (user_id, name, roll_no, department, academic_year, cpi) VALUES
-(5, 'Durba',     '200101', 'CSE', 3, 8.5),
-(6, 'Pallavi',   '200102', 'CSE', 3, 8.0),
-(7, 'Jyothika',  '200103', 'CSE', 3, 8.8),
-(8, 'Aayushman', '200104', 'CE',  3, 8.2),
-(9, 'bob', '000000', 'XYZ', 2, 7.0);
+(4, 'Durbasmriti', '200101', 'CSE', 3, 8.5),
+(5, 'Pallavi',     '200102', 'CSE', 3, 8.0),
+(6, 'Jyothika',    '200103', 'CSE', 3, 8.8),
+(7, 'Aayushman',   '200104', 'CE',  3, 8.2);
 
 -- -------------------------------------------------------
 -- PROFESSOR PROFILES
 -- -------------------------------------------------------
 INSERT INTO professor_profiles (user_id, name, department) VALUES
 (2, 'Prof. Arnab', 'CSE'),
-(3, 'Prof. Ritwij', 'HSS'),
-(4, 'Prof. Vinay',  'CE');
+(3, 'Prof. Ritwij', 'HSS');
 
 -- -------------------------------------------------------
 -- ACADEMICS
@@ -92,11 +87,10 @@ INSERT INTO priority_rules (course_id, weight_cpi, weight_dept_match) VALUES
 -- Durba (5) and Pallavi (6) completed CS371 in sem1 2025 → cleared for CS610.
 -- -------------------------------------------------------
 INSERT INTO student_transcript (student_id, offering_id, grade, is_passed, completed_at) VALUES
-(5, 4, 8.5, TRUE,  '2025-11-30'),   -- Durba     passed CS371 in sem1 2025
-(6, 4, 7.8, TRUE,  '2025-11-30'),   -- Pallavi   passed CS371 in sem1 2025
-(7, 4, 9.8, TRUE,  '2025-11-30'),   -- Jyothika   passed CS371 in sem1 2025
-(8, 4, 8.8, TRUE,  '2025-11-30'),   -- Aayushman   passed CS371 in sem1 2025
-(9, 4, 4.0, FALSE, '2025-11-30');   -- bob  attempted CS371 but failed
+(4, 4, 8.5, TRUE,  '2025-11-30'),   -- Durbasmriti passed CS371 in sem1 2025
+(5, 4, 7.8, TRUE,  '2025-11-30'),   -- Pallavi     passed CS371 in sem1 2025
+(6, 4, 9.8, TRUE,  '2025-11-30'),   -- Jyothika    passed CS371 in sem1 2025
+(7, 4, 8.8, TRUE,  '2025-11-30');   -- Aayushman   passed CS371 in sem1 2025
 
 -- -------------------------------------------------------
 -- ENROLLMENTS (current semester requests)
@@ -104,10 +98,10 @@ INSERT INTO student_transcript (student_id, offering_id, grade, is_passed, compl
 -- Jyothika (7) and Aayushman (8) are correctly NOT enrolled in CS610.
 -- -------------------------------------------------------
 -- INSERT INTO enrollments (student_id, offering_id, reg_type_id, intent, status) VALUES
--- (5, 1, 3, 'major',    'pending'),   -- Durba     → CS371
--- (5, 2, 3, 'major',    'pending'),   -- Durba     → CS610 (cleared: passed CS371)
--- (6, 1, 3, 'major',    'pending'),   -- Pallavi   → CS371
--- (6, 2, 3, 'minor',    'pending'),   -- Pallavi   → CS610 (cleared: passed CS371)
--- (9, 3, 3, 'major',    'pending'),   -- Jyothika  → CE683 (no CS610 — failed CS371)
+-- (4, 1, 3, 'major',    'pending'),   -- Durbasmriti → CS371
+-- (4, 2, 3, 'major',    'pending'),   -- Durbasmriti → CS610 (cleared: passed CS371)
+-- (5, 1, 3, 'major',    'pending'),   -- Pallavi     → CS371
+-- (5, 2, 3, 'minor',    'pending'),   -- Pallavi     → CS610 (cleared: passed CS371)
+-- (6, 3, 3, 'major',    'pending'),   -- Jyothika    → CE683
 
 

@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import { MENU_BY_ROLE, defaultMenuState } from './config/menus';
-import {
-  getEmailForRoll,
-  getPhoneForRoll,
-  maskEmailForDisplay,
-  maskPhoneForDisplay,
-} from './data/mockData';
 import { attachAuthHeaders, clearAuthHeaders } from './services/api';
 
 import StudentRegistrationFlow from './pages/student/StudentRegistrationFlow';
@@ -179,19 +173,14 @@ function App() {
 
   const handleResetPassword = (e) => {
     e.preventDefault();
-    const roll = credentials.username.trim();
-    if (!roll) {
-      setResetFeedback({ type: 'error', message: 'Please enter your roll number.' });
+    const loginId = credentials.username.trim();
+    if (!loginId) {
+      setResetFeedback({ type: 'error', message: 'Please enter your login ID.' });
       return;
     }
-    const email = getEmailForRoll(roll);
-    const phone = getPhoneForRoll(roll);
-    const maskedEmail = maskEmailForDisplay(email);
-    const maskedPhone = maskPhoneForDisplay(phone);
-    setResetFeedback({
-      type: 'success',
-      message: `A password reset link has been sent to ${maskedEmail} and an SMS to ${maskedPhone}.`,
-    });
+    setForgotPasswordMode(false);
+    setResetFeedback(null);
+    setCredentials((c) => ({ ...c, password: '' }));
   };
 
   const handleLogin = async (e) => {
@@ -250,80 +239,64 @@ function App() {
 
   const MainPanel = user ? ROLE_VIEWS[user.role]?.[selectedSub] : null;
 
-  const resetSuccess = forgotPasswordMode && resetFeedback?.type === 'success';
-
   if (!user) {
     return (
       <div className="login-container">
         <div className="login-box">
           <img src="/logo_black.png" alt="" className="login-logo" />
           <h2>Course Registration Portal</h2>
-          {!resetSuccess && (
-            <p className="login-sub">
-              {forgotPasswordMode ? (
-                <>Enter your roll number as registered in the system.</>
-              ) : (
-                <>
-                  Demo: username and password both <code>student</code>, <code>professor</code>, or{' '}
-                  <code>admin</code>
-                </>
-              )}
-            </p>
-          )}
-          {resetSuccess ? (
-            <div className="login-form login-reset-complete">
-              <p className="login-reset-feedback is-success" role="status">
-                {resetFeedback.message}
-              </p>
+          <p className="login-sub">
+            {forgotPasswordMode ? (
+              <>Enter your login ID to request a reset email.</>
+            ) : (
+              <>
+                Logins: <code>admin</code>, <code>arnab</code>, <code>ritwij</code>,{' '}
+                <code>durbasmriti</code>, <code>pallavi</code>, <code>jyothika</code>,{' '}
+                <code>aayushman</code>
+              </>
+            )}
+          </p>
+          <form
+            className="login-form"
+            onSubmit={forgotPasswordMode ? handleResetPassword : handleLogin}
+          >
+            <input
+              type="text"
+              placeholder={forgotPasswordMode ? 'Login ID' : 'Username'}
+              autoComplete={forgotPasswordMode ? 'off' : 'username'}
+              value={credentials.username}
+              onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+            />
+            {!forgotPasswordMode && (
+              <>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  autoComplete="current-password"
+                  value={credentials.password}
+                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                />
+                <div className="login-forgot-row">
+                  <button type="button" className="login-forgot-link" onClick={handleForgotPasswordClick}>
+                    Forgot password?
+                  </button>
+                </div>
+              </>
+            )}
+            {forgotPasswordMode && (
               <div className="login-forgot-row">
                 <button type="button" className="login-forgot-link" onClick={handleBackToLogin}>
                   Back to login
                 </button>
               </div>
-            </div>
-          ) : (
-            <form
-              className="login-form"
-              onSubmit={forgotPasswordMode ? handleResetPassword : handleLogin}
-            >
-              <input
-                type="text"
-                placeholder={forgotPasswordMode ? 'Roll number' : 'Username'}
-                autoComplete={forgotPasswordMode ? 'off' : 'username'}
-                value={credentials.username}
-                onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-              />
-              {!forgotPasswordMode && (
-                <>
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    autoComplete="current-password"
-                    value={credentials.password}
-                    onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                  />
-                  <div className="login-forgot-row">
-                    <button type="button" className="login-forgot-link" onClick={handleForgotPasswordClick}>
-                      Forgot password?
-                    </button>
-                  </div>
-                </>
-              )}
-              {forgotPasswordMode && (
-                <div className="login-forgot-row">
-                  <button type="button" className="login-forgot-link" onClick={handleBackToLogin}>
-                    Back to login
-                  </button>
-                </div>
-              )}
-              {resetFeedback && resetFeedback.type === 'error' && (
-                <p className="login-reset-feedback is-error" role="status">
-                  {resetFeedback.message}
-                </p>
-              )}
-              <button type="submit">{forgotPasswordMode ? 'Reset password' : 'Login'}</button>
-            </form>
-          )}
+            )}
+            {resetFeedback && resetFeedback.type === 'error' && (
+              <p className="login-reset-feedback is-error" role="status">
+                {resetFeedback.message}
+              </p>
+            )}
+            <button type="submit">{forgotPasswordMode ? 'Reset password' : 'Login'}</button>
+          </form>
         </div>
       </div>
     );
