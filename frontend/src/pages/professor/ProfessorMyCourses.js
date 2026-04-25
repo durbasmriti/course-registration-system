@@ -1,37 +1,46 @@
 import { useEffect, useState } from 'react';
 import { professorService } from '../../services/api';
-import { MOCK_COURSES } from '../../data/mockData';
 import TablePager from '../../components/TablePager';
 
-export default function ProfessorMyCourses() {
+export default function ProfessorMyCourses({ user }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hint, setHint] = useState(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState('10');
+  const professorId = user?.externalId || user?.staffId || user?.userId;
+
+  const loadCourses = async (cancelledRef) => {
+    setLoading(true);
+    try {
+      const { data } = await professorService.getMyCourses(professorId);
+      const list = Array.isArray(data) ? data : data?.courses ?? [];
+      if (!cancelledRef.current) {
+        setCourses(list);
+        setHint(list.length ? null : 'No courses found for this professor.');
+      }
+    } catch (err) {
+      if (!cancelledRef.current) {
+        setCourses([]);
+        setHint(err.response?.data?.message || 'Unable to load courses from the backend.');
+      }
+    } finally {
+      if (!cancelledRef.current) setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      try {
-        const { data } = await professorService.getMyCourses();
-        const list = Array.isArray(data) ? data : data?.courses ?? [];
-        if (!cancelled) setCourses(list.length ? list : MOCK_COURSES);
-        if (!list.length && !cancelled) setHint('Showing sample rows until the API returns your courses.');
-      } catch {
-        if (!cancelled) {
-          setCourses(MOCK_COURSES);
-          setHint('Backend unavailable. Showing sample data.');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+    const cancelled = { current: false };
+    loadCourses(cancelled);
+
+    const onCourseSaved = () => loadCourses(cancelled);
+    window.addEventListener('professor-course-saved', onCourseSaved);
+
     return () => {
-      cancelled = true;
+      cancelled.current = true;
+      window.removeEventListener('professor-course-saved', onCourseSaved);
     };
-  }, []);
+  }, [professorId]);
 
   const totalPages =
     pageSize === 'all' ? 1 : Math.max(1, Math.ceil(courses.length / Number(pageSize || 10)));
@@ -64,7 +73,14 @@ export default function ProfessorMyCourses() {
             </tr>
           </thead>
           <tbody>
-            {visibleCourses.map((c) => {
+            {visibleCourses.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="panel-muted">
+                  No courses assigned yet.
+                </td>
+              </tr>
+            ) : (
+              visibleCourses.map((c) => {
               const id = c.course_id || c.id;
               return (
                 <tr key={id}>
@@ -77,7 +93,8 @@ export default function ProfessorMyCourses() {
                   <td>{c.offering_dept ?? c.dept}</td>
                 </tr>
               );
-            })}
+              })
+            )}
           </tbody>
         </table>
       </div>

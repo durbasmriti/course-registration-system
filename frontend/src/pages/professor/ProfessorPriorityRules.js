@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { professorService } from '../../services/api';
 
-export default function ProfessorPriorityRules() {
+export default function ProfessorPriorityRules({ user }) {
+  const professorId = user?.externalId || user?.staffId || user?.userId;
+  const [offerings, setOfferings] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
   const [form, setForm] = useState({
-    course_id: '',
+    offering_id: '',
     weight_cpi: 1,
     weight_year: 0.1,
     weight_first_come: 0.01,
@@ -15,13 +18,73 @@ export default function ProfessorPriorityRules() {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadOfferings = async () => {
+      if (!professorId) {
+        setLoadingCourses(false);
+        return;
+      }
+
+      setLoadingCourses(true);
+      try {
+        const { data } = await professorService.getMyCourses(professorId);
+        const list = Array.isArray(data) ? data : data?.courses ?? [];
+        if (!cancelled) {
+          setOfferings(list);
+          if (list.length) {
+            setForm((prev) => ({ ...prev, offering_id: String(list[0].offering_id) }));
+          }
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.response?.data?.message || 'Unable to load your courses.');
+        }
+      } finally {
+        if (!cancelled) setLoadingCourses(false);
+      }
+    };
+
+    loadOfferings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [professorId]);
+
   const submit = async (e) => {
     e.preventDefault();
     setMessage(null);
     setError(null);
+
+    if (!form.offering_id) {
+      setError('Please select a course offering.');
+      return;
+    }
+
+    const selectedOffering = offerings.find(
+      (o) => String(o.offering_id) === String(form.offering_id)
+    );
+
+    if (!selectedOffering) {
+      setError('Selected course offering is invalid.');
+      return;
+    }
+
     try {
-      await professorService.setPriority(form);
-      setMessage('Priority rules submitted.');
+      await professorService.setPriority(form.offering_id, {
+        max_seats: Number(selectedOffering.max_seats || 0),
+        rules: {
+          cpi: Number(form.weight_cpi || 0),
+          year: Number(form.weight_year || 0),
+          dept: Number(form.weight_dept || 0),
+          major: Number(form.weight_major || 0),
+          minor: Number(form.weight_minor || 0),
+          elective: Number(form.weight_elective || 0),
+        },
+      });
+      setMessage('Priority rules saved to backend.');
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Submit failed.');
     }
@@ -37,13 +100,21 @@ export default function ProfessorPriorityRules() {
       {error && <p className="panel-error">{error}</p>}
       <form className="stack-form" onSubmit={submit}>
         <label className="form-label">
-          Course ID
-          <input
+          Course offering
+          <select
             className="form-input"
             required
-            value={form.course_id}
-            onChange={(e) => setForm({ ...form, course_id: e.target.value.toUpperCase() })}
-          />
+            value={form.offering_id}
+            onChange={(e) => setForm({ ...form, offering_id: e.target.value })}
+            disabled={loadingCourses || offerings.length === 0}
+          >
+            <option value="">Select course</option>
+            {offerings.map((o) => (
+              <option key={o.offering_id} value={o.offering_id}>
+                {o.course_code || o.course_id} - {o.title || o.course_name || o.name}
+              </option>
+            ))}
+          </select>
         </label>
         <div className="form-grid-weights">
           {[

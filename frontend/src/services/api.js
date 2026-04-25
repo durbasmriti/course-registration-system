@@ -38,12 +38,26 @@ export const studentService = {
 
 /** Professor */
 export const professorService = {
-  createCourse: (data) => api.post('/course', data),
+  createCourse: (data) => api.post('/courses/add', data),
   updateCourse: (courseId, data) => api.patch(`/course/${courseId}`, data),
-  setPriority: (data) => api.post('/set-priority', data),
-  setPrerequisite: (data) => api.post('/set-prerequisite', data),
-  getMyCourses: () => api.get('/professor/courses'),
-  getIncomingRequests: () => api.get('/professor/requests'),
+  setPriority: (offeringId, data) => api.put(`/courses/offering/${offeringId}/rules`, data),
+  runAllocation: (offeringId) => api.post(`/courses/offering/${offeringId}/allocate`),
+  setPrerequisite: (courseId, prerequisiteId) =>
+    api.post(`/courses/${encodeURIComponent(courseId)}/prerequisites`, {
+      prerequisite_id: prerequisiteId,
+    }),
+  getMyCourses: (userId) => {
+    const config = userId
+      ? { params: { user_id: userId }, headers: { 'x-user-id': userId } }
+      : undefined;
+    return api.get('/courses/professor/courses', config);
+  },
+  getIncomingRequests: (userId) => {
+    const config = userId
+      ? { params: { user_id: userId }, headers: { 'x-user-id': userId } }
+      : undefined;
+    return api.get('/courses/professor/requests', config);
+  },
 };
 
 /** Admin */
