@@ -178,6 +178,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
     }
     
     const courseId = selectedCourse.course_id || selectedCourse.id;
+    const courseCode = selectedCourse.course_code || String(courseId);
     const offeringId = selectedCourse.offering_id;
     
     if (!offeringId) {
@@ -205,7 +206,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
 
       await loadStudentEnrollments(userId);
       
-      setMessage(`Request submitted for ${courseId} (${formatIntentLabel(intent)}). It will appear in the table below.`);
+      setMessage(`Request submitted for ${courseCode} (${formatIntentLabel(intent)}). It will appear in the table below.`);
       setSelectedId('');
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || 'Failed to submit request';
@@ -217,6 +218,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
   const filteredRows = useMemo(() => {
     const tableRows = studentEnrollments.map((e) => ({
       course_id: e.course_id,
+      course_code: e.course_code || String(e.course_id),
       course_name: e.title,
       request_intent: e.intent,
       credits: Number(e.credits || 0),
@@ -228,6 +230,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
     if (!q) return tableRows;
     return tableRows.filter((r) => {
       const haystack = [
+        r.course_code,
         r.course_id,
         r.course_name,
         r.request_intent,
@@ -303,10 +306,11 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
               <option value="">Choose a course</option>
               {catalog.map((c) => {
                 const id = String(c.course_id || c.id);
+                const code = c.course_code || id;
                 const name = c.title || c.course_name || c.name;
                 return (
                   <option key={id} value={id}>
-                    {id}: {name}
+                    {code}: {name}
                   </option>
                 );
               })}
@@ -364,7 +368,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
         <table className="data-table">
           <thead>
             <tr>
-              <th>Course ID</th>
+              <th>Course code</th>
               <th>Course name</th>
               <th>Intent</th>
               <th>Status</th>
@@ -382,7 +386,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
               visibleRows.map((r) => (
                 <tr key={r.course_id + (r.requested_at || '')}>
                   <td>
-                    <strong>{r.course_id}</strong>
+                    <strong>{r.course_code}</strong>
                   </td>
                   <td>{r.course_name}</td>
                   <td>{formatIntentLabel(r.request_intent)}</td>

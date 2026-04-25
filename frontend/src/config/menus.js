@@ -38,17 +38,11 @@ export const PROFESSOR_MENU = [
     id: 'Personal',
     items: [
       { key: 'prof-profile', label: 'Instructor Profile' },
-      { key: 'prof-password', label: 'Change Password' },
     ],
   },
 ];
 
-export const ADMIN_MENU = [
-  {
-    id: 'Personal',
-    items: [{ key: 'admin-password', label: 'Change Password' }],
-  },
-];
+export const ADMIN_MENU = [];
 
 export const MENU_BY_ROLE = {
   student: STUDENT_MENU,
