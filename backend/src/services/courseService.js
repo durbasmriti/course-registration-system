@@ -14,8 +14,9 @@ const getAllCourses = async () => {
         co.max_seats,
         co.professor_id
       FROM courses c
-      LEFT JOIN course_offerings co ON c.course_id = co.course_id
-      LIMIT 100
+            INNER JOIN course_offerings co ON c.course_id = co.course_id
+            INNER JOIN academics a ON co.academic_id = a.academic_id AND a.is_active = TRUE
+            ORDER BY c.course_code ASC, co.offering_id ASC
     `);
     return rows;
   } catch (err) {
@@ -302,6 +303,32 @@ const addPrerequisite = async (courseId, prerequisiteId) => {
     }
 };
 
+// Get student enrollments with course details (for calculating applied credits)
+const getStudentEnrollments = async (userId) => {
+    const pool = getPool();
+    try {
+        const [enrollments] = await pool.query(`
+            SELECT 
+                e.enrollment_id,
+                e.offering_id,
+                e.status,
+                e.intent,
+                e.requested_at,
+                COALESCE(c.course_id, co.course_id, e.offering_id) AS course_id,
+                c.course_code,
+                COALESCE(c.title, c.course_code, CONCAT('Offering ', e.offering_id)) AS title,
+                COALESCE(c.credits, 0) AS credits
+            FROM enrollments e
+            LEFT JOIN course_offerings co ON e.offering_id = co.offering_id
+            LEFT JOIN courses c ON co.course_id = c.course_id
+            WHERE e.student_id = ?
+            ORDER BY e.requested_at DESC
+        `, [userId]);
+        return enrollments;
+    } catch (err) {
+        throw new Error(`Database error: ${err.message}`);
+    }
+};
 
 
-module.exports = { getAllCourses, requestCourse, updateOfferingRules, processAllocations, addCourse, addPrerequisite};
+module.exports = { getAllCourses, requestCourse, updateOfferingRules, processAllocations, addCourse, addPrerequisite, getStudentEnrollments };

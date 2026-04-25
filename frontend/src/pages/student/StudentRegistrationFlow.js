@@ -1,6 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { studentService } from '../../services/api';
-import { MOCK_COURSES } from '../../data/mockData';
 import StatusBadge from '../../components/StatusBadge';
 import TablePager from '../../components/TablePager';
 
@@ -26,32 +25,32 @@ const PAGE_STATUS_BY_VIEW = {
 };
 
 /** Mock rows until MySQL backend exists */
-const INITIAL_REQUEST_ROWS = [
-  {
-    course_id: 'CE371',
-    course_name: 'Design of Reinforced Concrete Structures',
-    request_intent: 'major',
-    credits: 9,
-    status: 'accepted',
-    requested_at: '2026-01-08T09:15:00Z',
-  },
-  {
-    course_id: 'CS610',
-    course_name: 'Programming for Performance',
-    request_intent: 'minor',
-    credits: 9,
-    status: 'pending',
-    requested_at: '2026-01-09T11:00:00Z',
-  },
-  {
-    course_id: 'CE683',
-    course_name: 'Humans, Environment and Sustainable Development',
-    request_intent: 'elective',
-    credits: 9,
-    status: 'rejected',
-    requested_at: '2026-01-09T14:30:00Z',
-  },
-];
+// const INITIAL_REQUEST_ROWS = [
+//   {
+//     course_id: 'CE371',
+//     course_name: 'Design of Reinforced Concrete Structures',
+//     request_intent: 'major',
+//     credits: 9,
+//     status: 'accepted',
+//     requested_at: '2026-01-08T09:15:00Z',
+//   },
+//   {
+//     course_id: 'CS610',
+//     course_name: 'Programming for Performance',
+//     request_intent: 'minor',
+//     credits: 9,
+//     status: 'pending',
+//     requested_at: '2026-01-09T11:00:00Z',
+//   },
+//   {
+//     course_id: 'CE683',
+//     course_name: 'Humans, Environment and Sustainable Development',
+//     request_intent: 'elective',
+//     credits: 9,
+//     status: 'rejected',
+//     requested_at: '2026-01-09T14:30:00Z',
+//   },
+// ];
 
 function formatIntentLabel(raw) {
   if (!raw) return 'N/A';
@@ -73,8 +72,19 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
   const pageLocation = PAGE_LOCATION_BY_VIEW[viewKey] || `Academics > ${windowTitle}`;
   const pageStatus = PAGE_STATUS_BY_VIEW[viewKey] || 'open';
   const canRequestCourses = pageStatus === 'open';
+  const userId = user?.id || user?.externalId || user?.rollNo || user?.userId;
 
-  const catalog = useMemo(() => MOCK_COURSES, []);
+  // Fetch courses from backend
+  const [catalog, setCatalog] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
+  const [coursesError, setCoursesError] = useState(null);
+  
+  // Fetch student profile from backend
+  const [studentData, setStudentData] = useState(null);
+  
+  // Fetch student enrollments (for applied credits from database)
+  const [studentEnrollments, setStudentEnrollments] = useState([]);
+  
   const [selectedId, setSelectedId] = useState('');
   const [intent, setIntent] = useState('major');
   const [displayLimit, setDisplayLimit] = useState('10');
@@ -82,67 +92,141 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
   const [filterQuery, setFilterQuery] = useState('');
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
-  const [rows, setRows] = useState(INITIAL_REQUEST_ROWS);
 
-  const selectedCourse = catalog.find((c) => (c.course_id || c.id) === selectedId);
+  const loadStudentEnrollments = async (currentUserId) => {
+    if (!currentUserId) {
+      setStudentEnrollments([]);
+      return;
+    }
+
+    try {
+      console.log('Fetching enrollments for userId:', currentUserId);
+      const enrollmentsResponse = await studentService.getStudentEnrollments(currentUserId);
+      const enrollments = Array.isArray(enrollmentsResponse.data) ? enrollmentsResponse.data : [];
+
+      setStudentEnrollments(enrollments);
+    } catch (err) {
+      console.error('Error loading enrollments:', err);
+      setStudentEnrollments([]);
+    }
+  };
+
+  // Load courses and student profile from backend on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      console.log('StudentRegistrationFlow - userId:', userId, 'user object:', user);
+      
+      // Load courses
+      try {
+        setCoursesLoading(true);
+        setCoursesError(null);
+        const response = await studentService.getCourses();
+        const coursesData = Array.isArray(response.data) ? response.data : response.data.courses || [];
+        setCatalog(coursesData);
+      } catch (err) {
+        setCoursesError(err.message || 'Failed to load courses');
+        console.error('Error loading courses:', err);
+      } finally {
+        setCoursesLoading(false);
+      }
+
+      // Load student profile and enrollments
+      if (userId) {
+        try {
+          const profileResponse = await studentService.getStudentProfile(userId);
+          const profile = profileResponse.data;
+          console.log('Student profile loaded:', profile);
+          setStudentData(profile);
+        } catch (err) {
+          console.error('Error loading student profile:', err);
+        }
+
+        await loadStudentEnrollments(userId);
+      } else {
+        console.warn('No userId found, using mock data as fallback');
+        setStudentEnrollments([]);
+      }
+    };
+    loadData();
+  }, [userId, user]);
+
+  const selectedCourse = catalog.find((c) => {
+    const id = c.course_id || c.id;
+    // Handle both string and number comparison
+    return String(id) === String(selectedId);
+  });
 
   const submitRequest = async () => {
     if (!canRequestCourses) return;
     setError(null);
     setMessage(null);
-    if (!selectedId || !selectedCourse) {
+    
+    console.log('submitRequest called');
+    console.log('selectedId:', selectedId);
+    console.log('selectedCourse:', selectedCourse);
+    console.log('catalog:', catalog);
+    
+    if (!selectedId) {
       setError('Select a course from the dropdown first.');
       return;
     }
+    
+    if (!selectedCourse) {
+      console.error('Course not found in catalog for selectedId:', selectedId);
+      setError('Course not found. Please select again.');
+      return;
+    }
+    
     const courseId = selectedCourse.course_id || selectedCourse.id;
-    const exists = rows.some((r) => r.course_id === courseId);
+    const offeringId = selectedCourse.offering_id;
+    
+    if (!offeringId) {
+      setError('Course offering information is missing. Please select another course.');
+      return;
+    }
+
+    const exists = studentEnrollments.some((r) => String(r.course_id) === String(courseId) || String(r.offering_id) === String(offeringId));
     if (exists) {
       setError('You already have a request for this course.');
       return;
     }
 
     try {
-      await studentService.requestCourse({
-        courseId: courseId,
-        course_id: courseId,
-        request_intent: intent,
-        student_id: user?.externalId || user?.rollNo,
-        window: viewKey,
+      console.log('Submitting request with userId:', userId, 'offeringId:', offeringId, 'intent:', intent);
+      
+      // Send request to backend with proper field names
+      const response = await studentService.requestCourse({
+        user_id: userId,
+        offering_id: offeringId,
+        intent: intent,
       });
-      setRows((prev) => [
-        {
-          course_id: courseId,
-          course_name: selectedCourse.course_name || selectedCourse.name,
-          request_intent: intent,
-          credits: Number(selectedCourse.credits || selectedCourse.credit || 0),
-          status: 'requested',
-          requested_at: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
-      setMessage(`Request submitted for ${courseId} (${formatIntentLabel(intent)}).`);
+      
+      console.log('Request successful:', response);
+
+      await loadStudentEnrollments(userId);
+      
+      setMessage(`Request submitted for ${courseId} (${formatIntentLabel(intent)}). It will appear in the table below.`);
       setSelectedId('');
-    } catch {
-      setRows((prev) => [
-        {
-          course_id: courseId,
-          course_name: selectedCourse.course_name || selectedCourse.name,
-          request_intent: intent,
-          credits: Number(selectedCourse.credits || selectedCourse.credit || 0),
-          status: 'pending',
-          requested_at: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
-      setMessage(`Request recorded locally (${courseId}). Connect the API to persist.`);
-      setSelectedId('');
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to submit request';
+      setError(`Error: ${errorMsg}`);
+      console.error('Course request error:', err);
     }
   };
 
   const filteredRows = useMemo(() => {
+    const tableRows = studentEnrollments.map((e) => ({
+      course_id: e.course_id,
+      course_name: e.title,
+      request_intent: e.intent,
+      credits: Number(e.credits || 0),
+      status: e.status,
+      requested_at: e.requested_at,
+    }));
+
     const q = filterQuery.trim().toLowerCase();
-    if (!q) return rows;
-    return rows.filter((r) => {
+    if (!q) return tableRows;
+    return tableRows.filter((r) => {
       const haystack = [
         r.course_id,
         r.course_name,
@@ -155,7 +239,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [rows, filterQuery]);
+  }, [studentEnrollments, filterQuery]);
 
   const visibleRows = useMemo(() => {
     if (displayLimit === 'all') return filteredRows;
@@ -172,19 +256,17 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
     return Math.max(1, Math.ceil(filteredRows.length / count));
   }, [filteredRows.length, displayLimit]);
 
-  const appliedCredits = useMemo(
-    () => rows.reduce((sum, r) => sum + Number(r.credits || 0), 0),
-    [rows],
-  );
+  const appliedCredits = useMemo(() => {
+    // Calculate from database enrollments first, fallback to rows if no enrollments
+    if (studentEnrollments && studentEnrollments.length > 0) {
+      return studentEnrollments.reduce((sum, e) => sum + Number(e.credits || 0), 0);
+    }
+    return 0;
+  }, [studentEnrollments]);
 
-  const studentDetails = {
-    name: user?.displayName || 'Aayushman Kumar',
-    rollNo: user?.rollNo || user?.externalId || '230029',
-    program: 'B.Tech',
-    emailId: 'aayushmank23@iitk.ac.in',
-    department: 'CE',
+  const studentDetails = useMemo(() => ({
     appliedCredits,
-  };
+  }), [appliedCredits]);
 
   return (
     <div className="content-panel">
@@ -198,29 +280,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
         </p>
       </div>
       <section className="student-info-strip">
-        <div className="student-info-grid">
-          <p className="student-info-item">
-            <span>Student name :</span>
-            <strong>{studentDetails.name}</strong>
-          </p>
-          <p className="student-info-item">
-            <span>Roll number :</span>
-            <strong>{studentDetails.rollNo}</strong>
-          </p>
-          <p className="student-info-item">
-            <span>Program :</span>
-            <strong>{studentDetails.program}</strong>
-          </p>
-          <p className="student-info-item">
-            <span>Email ID :</span>
-            <strong>
-              <a href={`mailto:${studentDetails.emailId}`}>{studentDetails.emailId}</a>
-            </strong>
-          </p>
-          <p className="student-info-item">
-            <span>Department :</span>
-            <strong>{studentDetails.department}</strong>
-          </p>
+        <div className="student-info-grid student-info-grid--single">
           <p className="student-info-item student-info-item--single">
             <span>Applied credits :</span>
             <strong>{studentDetails.appliedCredits}</strong>
@@ -232,17 +292,21 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
         <div className="registration-toolbar">
           <label className="form-label registration-field">
             <span className="field-label">Select course</span>
+            {coursesLoading && <span className="field-hint">(Loading courses...)</span>}
+            {coursesError && <span className="field-error">(Error: {coursesError})</span>}
             <select
               className="form-input form-input-wide"
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
+              disabled={coursesLoading || catalog.length === 0}
             >
               <option value="">Choose a course</option>
               {catalog.map((c) => {
-                const id = c.course_id || c.id;
+                const id = String(c.course_id || c.id);
+                const name = c.title || c.course_name || c.name;
                 return (
                   <option key={id} value={id}>
-                    {id}: {c.course_name || c.name}
+                    {id}: {name}
                   </option>
                 );
               })}
@@ -256,7 +320,12 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
               <option value="elective">Elective</option>
             </select>
           </label>
-          <button type="button" className="btn-primary registration-submit" onClick={submitRequest}>
+          <button 
+            type="button" 
+            className="btn-primary registration-submit" 
+            onClick={submitRequest}
+            disabled={coursesLoading}
+          >
             Request Course
           </button>
         </div>

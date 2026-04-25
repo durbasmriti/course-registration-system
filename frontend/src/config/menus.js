@@ -14,7 +14,6 @@ export const STUDENT_MENU = [
     id: 'Personal',
     items: [
       { key: 'profile', label: 'Student Profile' },
-      { key: 'password', label: 'Change Password' },
     ],
   },
 ];
