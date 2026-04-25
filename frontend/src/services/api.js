@@ -31,6 +31,7 @@ export const studentService = {
   }),
   // Fetch student enrollments (for calculating applied credits)
   getStudentEnrollments: (userId) => api.get('/courses/student-enrollments', {
+    params: { user_id: userId },
     headers: { 'user-id': userId }
   }),
 };

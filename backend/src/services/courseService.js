@@ -14,8 +14,9 @@ const getAllCourses = async () => {
         co.max_seats,
         co.professor_id
       FROM courses c
-      LEFT JOIN course_offerings co ON c.course_id = co.course_id
-      LIMIT 100
+            INNER JOIN course_offerings co ON c.course_id = co.course_id
+            INNER JOIN academics a ON co.academic_id = a.academic_id AND a.is_active = TRUE
+            ORDER BY c.course_code ASC, co.offering_id ASC
     `);
     return rows;
   } catch (err) {
@@ -313,13 +314,13 @@ const getStudentEnrollments = async (userId) => {
                 e.status,
                 e.intent,
                 e.requested_at,
-                c.course_id,
+                COALESCE(c.course_id, co.course_id, e.offering_id) AS course_id,
                 c.course_code,
-                c.title,
-                c.credits
+                COALESCE(c.title, c.course_code, CONCAT('Offering ', e.offering_id)) AS title,
+                COALESCE(c.credits, 0) AS credits
             FROM enrollments e
-            JOIN course_offerings co ON e.offering_id = co.offering_id
-            JOIN courses c ON co.course_id = c.course_id
+            LEFT JOIN course_offerings co ON e.offering_id = co.offering_id
+            LEFT JOIN courses c ON co.course_id = c.course_id
             WHERE e.student_id = ?
             ORDER BY e.requested_at DESC
         `, [userId]);

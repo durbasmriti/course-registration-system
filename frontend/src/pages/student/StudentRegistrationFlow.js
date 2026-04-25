@@ -72,6 +72,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
   const pageLocation = PAGE_LOCATION_BY_VIEW[viewKey] || `Academics > ${windowTitle}`;
   const pageStatus = PAGE_STATUS_BY_VIEW[viewKey] || 'open';
   const canRequestCourses = pageStatus === 'open';
+  const userId = user?.id || user?.externalId || user?.rollNo || user?.userId;
 
   // Fetch courses from backend
   const [catalog, setCatalog] = useState([]);
@@ -91,13 +92,28 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
   const [filterQuery, setFilterQuery] = useState('');
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
-  const [rows, setRows] = useState([]);
+
+  const loadStudentEnrollments = async (currentUserId) => {
+    if (!currentUserId) {
+      setStudentEnrollments([]);
+      return;
+    }
+
+    try {
+      console.log('Fetching enrollments for userId:', currentUserId);
+      const enrollmentsResponse = await studentService.getStudentEnrollments(currentUserId);
+      const enrollments = Array.isArray(enrollmentsResponse.data) ? enrollmentsResponse.data : [];
+
+      setStudentEnrollments(enrollments);
+    } catch (err) {
+      console.error('Error loading enrollments:', err);
+      setStudentEnrollments([]);
+    }
+  };
 
   // Load courses and student profile from backend on component mount
   useEffect(() => {
     const loadData = async () => {
-      // Get user ID - try multiple properties to find it
-      const userId = user?.id || user?.externalId || user?.rollNo || user?.userId;
       console.log('StudentRegistrationFlow - userId:', userId, 'user object:', user);
       
       // Load courses
@@ -125,43 +141,14 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
           console.error('Error loading student profile:', err);
         }
 
-        try {
-          console.log('Fetching enrollments for userId:', userId);
-          const enrollmentsResponse = await studentService.getStudentEnrollments(userId);
-          console.log('Enrollments response:', enrollmentsResponse);
-          const enrollments = Array.isArray(enrollmentsResponse.data) ? enrollmentsResponse.data : [];
-          console.log('Parsed enrollments:', enrollments);
-          
-          if (enrollments && enrollments.length > 0) {
-            const enrollmentRows = enrollments.map(e => ({
-              course_id: e.course_id,
-              course_name: e.title,
-              request_intent: e.intent,
-              credits: Number(e.credits || 0),
-              status: e.status,
-              requested_at: e.requested_at,
-            }));
-            console.log('Setting rows to enrollmentRows:', enrollmentRows);
-            setRows(enrollmentRows);
-            setStudentEnrollments(enrollments);
-          } else {
-            console.log('No enrollments found, using mock data as fallback');
-            //setRows(INITIAL_REQUEST_ROWS);
-            setStudentEnrollments([]);
-          }
-        } catch (err) {
-          console.error('Error loading enrollments:', err);
-          // Fallback to mock data if API fails
-          //setRows(INITIAL_REQUEST_ROWS);
-          setStudentEnrollments([]);
-        }
+        await loadStudentEnrollments(userId);
       } else {
         console.warn('No userId found, using mock data as fallback');
-        //setRows(INITIAL_REQUEST_ROWS);
+        setStudentEnrollments([]);
       }
     };
     loadData();
-  }, [user]);
+  }, [userId, user]);
 
   const selectedCourse = catalog.find((c) => {
     const id = c.course_id || c.id;
@@ -198,14 +185,13 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
       return;
     }
 
-    const exists = rows.some((r) => r.course_id === courseId);
+    const exists = studentEnrollments.some((r) => String(r.course_id) === String(courseId) || String(r.offering_id) === String(offeringId));
     if (exists) {
       setError('You already have a request for this course.');
       return;
     }
 
     try {
-      const userId = user?.id || user?.externalId || user?.rollNo || user?.userId;
       console.log('Submitting request with userId:', userId, 'offeringId:', offeringId, 'intent:', intent);
       
       // Send request to backend with proper field names
@@ -216,35 +202,8 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
       });
       
       console.log('Request successful:', response);
-      
-      // Create new enrollment object
-      const newEnrollment = {
-        course_id: courseId,
-        course_name: selectedCourse.title || selectedCourse.course_name || selectedCourse.name,
-        request_intent: intent,
-        credits: Number(selectedCourse.credits || 0),
-        status: 'pending',
-        requested_at: new Date().toISOString(),
-      };
-      
-      // Update rows state
-      setRows((prev) => [newEnrollment, ...prev]);
-      
-      // Update studentEnrollments state
-      setStudentEnrollments((prev) => [
-        {
-          enrollment_id: Date.now(), // temporary ID
-          offering_id: offeringId,
-          status: 'pending',
-          intent: intent,
-          requested_at: new Date().toISOString(),
-          course_id: courseId,
-          course_code: selectedCourse.course_code || '',
-          title: selectedCourse.title || selectedCourse.course_name || selectedCourse.name,
-          credits: Number(selectedCourse.credits || 0),
-        },
-        ...prev,
-      ]);
+
+      await loadStudentEnrollments(userId);
       
       setMessage(`Request submitted for ${courseId} (${formatIntentLabel(intent)}). It will appear in the table below.`);
       setSelectedId('');
@@ -256,9 +215,18 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
   };
 
   const filteredRows = useMemo(() => {
+    const tableRows = studentEnrollments.map((e) => ({
+      course_id: e.course_id,
+      course_name: e.title,
+      request_intent: e.intent,
+      credits: Number(e.credits || 0),
+      status: e.status,
+      requested_at: e.requested_at,
+    }));
+
     const q = filterQuery.trim().toLowerCase();
-    if (!q) return rows;
-    return rows.filter((r) => {
+    if (!q) return tableRows;
+    return tableRows.filter((r) => {
       const haystack = [
         r.course_id,
         r.course_name,
@@ -271,7 +239,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [rows, filterQuery]);
+  }, [studentEnrollments, filterQuery]);
 
   const visibleRows = useMemo(() => {
     if (displayLimit === 'all') return filteredRows;
@@ -293,17 +261,12 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
     if (studentEnrollments && studentEnrollments.length > 0) {
       return studentEnrollments.reduce((sum, e) => sum + Number(e.credits || 0), 0);
     }
-    return rows.reduce((sum, r) => sum + Number(r.credits || 0), 0);
-  }, [studentEnrollments, rows]);
+    return 0;
+  }, [studentEnrollments]);
 
   const studentDetails = useMemo(() => ({
-    name: studentData?.name || user?.displayName || 'Loading...',
-    rollNo: studentData?.roll_no || user?.rollNo || user?.externalId || 'Loading...',
-    program: 'B.Tech',
-    emailId: studentData?.email || user?.email || 'N/A',
-    department: studentData?.department || 'N/A',
     appliedCredits,
-  }), [studentData, user, appliedCredits]);
+  }), [appliedCredits]);
 
   return (
     <div className="content-panel">
@@ -317,29 +280,7 @@ export default function StudentRegistrationFlow({ user, viewKey }) {
         </p>
       </div>
       <section className="student-info-strip">
-        <div className="student-info-grid">
-          <p className="student-info-item">
-            <span>Student name :</span>
-            <strong>{studentDetails.name}</strong>
-          </p>
-          <p className="student-info-item">
-            <span>Roll number :</span>
-            <strong>{studentDetails.rollNo}</strong>
-          </p>
-          <p className="student-info-item">
-            <span>Program :</span>
-            <strong>{studentDetails.program}</strong>
-          </p>
-          <p className="student-info-item">
-            <span>Email ID :</span>
-            <strong>
-              <a href={`mailto:${studentDetails.emailId}`}>{studentDetails.emailId}</a>
-            </strong>
-          </p>
-          <p className="student-info-item">
-            <span>Department :</span>
-            <strong>{studentDetails.department}</strong>
-          </p>
+        <div className="student-info-grid student-info-grid--single">
           <p className="student-info-item student-info-item--single">
             <span>Applied credits :</span>
             <strong>{studentDetails.appliedCredits}</strong>
