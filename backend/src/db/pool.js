@@ -3,15 +3,16 @@ const mysql = require('mysql2/promise');
 
 function createPool() {
   const config = {
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: Number(process.env.DB_PORT || 3306),
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'course_registration',
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
     namedPlaceholders: true,
   };
+  console.log("Connecting to DB:", config.host, config.port, config.database);
   return mysql.createPool(config);
 }
 
