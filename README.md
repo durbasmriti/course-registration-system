@@ -7,13 +7,14 @@ Students can browse available courses, submit enrollment requests, and track the
 The system uses role-based access control to provide secure and relevant access to each user type. It also incorporates automated, rule-based seat allocation, reducing manual effort and making the process more efficient, transparent, and fair.
 
 ## Team Members
-Aayushman Kumar (230039)
 
 Durbasmriti Saha (230393)
 
+Pallavi Reddi (230850)
+
 Jyothika Seru (230946)
 
-Pallavi Reddy (230850)
+Aayushman Kumar (230039)
 
 ## Tech stack
 
