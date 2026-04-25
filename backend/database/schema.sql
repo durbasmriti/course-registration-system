@@ -34,7 +34,7 @@ CREATE TABLE student_profiles (
   name       VARCHAR(255) NOT NULL,
   roll_no    VARCHAR(50) UNIQUE NOT NULL,
   department VARCHAR(100),
-  year       INT,
+  academic_year       INT,
   cpi        DECIMAL(4,2),
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -47,10 +47,10 @@ CREATE TABLE professor_profiles (
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 4. ACADEMICS
+-- 4. ACADEMICS (year -> academic_year)
 CREATE TABLE academics (
   academic_id INT AUTO_INCREMENT PRIMARY KEY,
-  year        INT NOT NULL,
+  academic_year        INT NOT NULL,
   semester    ENUM('sem1', 'sem2', 'summer') NOT NULL,
   is_active   BOOLEAN DEFAULT FALSE
 ) ENGINE=InnoDB;
@@ -108,19 +108,20 @@ CREATE TABLE prerequisites (
   FOREIGN KEY (prerequisite_id) REFERENCES courses(course_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 10. PRIORITY RULES
+-- 10. PRIORITY RULES  (made defaults as 0)
 CREATE TABLE priority_rules (
   course_id          INT PRIMARY KEY,
-  weight_cpi         DECIMAL(5,2) DEFAULT 1.0,
-  weight_year        DECIMAL(5,2) DEFAULT 0.1,
-  weight_first_come  DECIMAL(5,2) DEFAULT 0.01,
-  weight_dept_match  DECIMAL(5,2) DEFAULT 0.5,
-  weight_major       DECIMAL(5,2) DEFAULT 1.0,
-  weight_minor       DECIMAL(5,2) DEFAULT 0.6,
-  weight_elective    DECIMAL(5,2) DEFAULT 0.4,
+  weight_cpi         DECIMAL(5,2) DEFAULT 0.0,
+  weight_year        DECIMAL(5,2) DEFAULT 0.0,
+  weight_first_come  DECIMAL(5,2) DEFAULT 0.0,
+  weight_dept_match  DECIMAL(5,2) DEFAULT 0.0,
+  weight_major       DECIMAL(5,2) DEFAULT 0.0,
+  weight_minor       DECIMAL(5,2) DEFAULT 0.0,
+  weight_elective    DECIMAL(5,2) DEFAULT 0.0,
   updated_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
 
 -- 11. STUDENT TRANSCRIPT
 -- Permanent record of every course a student has completed (past semesters).

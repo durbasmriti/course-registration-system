@@ -63,6 +63,10 @@ const runAllocationController = async (req, res) => {
   try {
     const { offering_id } = req.params;
     
+    if (!offering_id) {
+      return res.status(400).json({ message: "Offering ID is required" });
+    }
+
     await processAllocations(offering_id);
     res.json({ message: "Allocation process completed successfully" });
   } catch (err) {

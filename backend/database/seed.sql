@@ -16,12 +16,12 @@ INSERT INTO users (user_id, username, email, password_hash, role) VALUES
 -- -------------------------------------------------------
 -- STUDENT PROFILES
 -- -------------------------------------------------------
-INSERT INTO student_profiles (user_id, name, roll_no, department, year, cpi) VALUES
+INSERT INTO student_profiles (user_id, name, roll_no, department, academic_year, cpi) VALUES
 (5, 'Durba',     '200101', 'CSE', 3, 8.5),
 (6, 'Pallavi',   '200102', 'CSE', 3, 8.0),
 (7, 'Jyothika',  '200103', 'CSE', 3, 8.8),
 (8, 'Aayushman', '200104', 'CE',  3, 8.2),
-(9, 'bob', '000000', 'XYZ', 3, 7.0);
+(9, 'bob', '000000', 'XYZ', 2, 7.0);
 
 -- -------------------------------------------------------
 -- PROFESSOR PROFILES
@@ -35,7 +35,7 @@ INSERT INTO professor_profiles (user_id, name, department) VALUES
 -- ACADEMICS
 -- current active semester + one past semester for transcript data
 -- -------------------------------------------------------
-INSERT INTO academics (academic_id, year, semester, is_active) VALUES
+INSERT INTO academics (academic_id, academic_year, semester, is_active) VALUES
 (1, 2025, 'sem1', FALSE),   -- past semester (used in transcript)
 (2, 2026, 'sem2', TRUE);    -- current active semester
 

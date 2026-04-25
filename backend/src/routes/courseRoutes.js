@@ -22,7 +22,7 @@ router.post('/request', requestCourseController);  // working
 router.put('/offering/:offering_id/rules', updateRulesController);  // working
 
 // Admin or Professor: Run allocation
-router.post('/offering/:offering_id/allocate', runAllocationController);  
+router.post('/offering/:offering_id/allocate', runAllocationController);  // working
 
 
 // prof -> add course
@@ -30,6 +30,12 @@ router.post('/add', addCourseController); // working
 
 // prof -> add prerequisite for a course
 router.post('/:courseId/prerequisites', addPrerequisiteController); // working
+
+// login api
+
+// get profile api
+
+
 
 
 module.exports = router;

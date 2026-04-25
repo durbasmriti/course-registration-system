@@ -85,27 +85,50 @@ const updateOfferingRules = async (offeringId, rules, maxSeats) => {
     try {
         await connection.beginTransaction();
 
-        // Update seat limit
+        // 1. Update seat limit in course_offerings
         await connection.query(
             'UPDATE course_offerings SET max_seats = ? WHERE offering_id = ?',
             [maxSeats, offeringId]
         );
 
-        // Get course_id
-        const [[{ course_id }]] = await connection.query(
+        // 2. Get course_id associated with this offering
+        const [offeringRows] = await connection.query(
             'SELECT course_id FROM course_offerings WHERE offering_id = ?',
             [offeringId]
         );
+        
+        if (offeringRows.length === 0) throw new Error("Offering not found");
+        const course_id = offeringRows[0].course_id;
 
-        // Update or Insert weights
+        // 3. Update or Insert all 6 weight parameters
+        // included weight_major, weight_minor, and weight_elective
         await connection.query(
-            `INSERT INTO priority_rules (course_id, weight_cpi, weight_year, weight_dept_match) 
-            VALUES (?, ?, ?, ?)
+            `INSERT INTO priority_rules (
+                course_id, 
+                weight_cpi, 
+                weight_year, 
+                weight_dept_match, 
+                weight_major, 
+                weight_minor, 
+                weight_elective
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
-            weight_cpi = VALUES(weight_cpi), 
-            weight_year = VALUES(weight_year), 
-            weight_dept_match = VALUES(weight_dept_match)`,
-            [course_id, rules.cpi, rules.year, rules.dept] // Ensure rules.dept is passed from frontend
+                weight_cpi        = VALUES(weight_cpi), 
+                weight_year       = VALUES(weight_year), 
+                weight_dept_match = VALUES(weight_dept_match),
+                weight_major      = VALUES(weight_major),
+                weight_minor      = VALUES(weight_minor),
+                weight_elective   = VALUES(weight_elective)`,
+            [
+                course_id, 
+                rules.cpi, 
+                rules.year, 
+                rules.dept, 
+                rules.major, 
+                rules.minor, 
+                rules.elective
+            ]
         );
 
         await connection.commit();
@@ -124,29 +147,41 @@ const processAllocations = async (offeringId) => {
     try {
         await connection.beginTransaction();
 
-        // 1. Get Ranking based on weighted sum
+        // 1. Get Ranking based on the new weighted sum formula
         const [rankedStudents] = await connection.query(`
             SELECT 
                 r.student_id,
-                ((sp.cpi * pr.weight_cpi) + (sp.year * pr.weight_year) + 
-                (IF(sp.department = c.department, 1, 0) * pr.weight_dept_match)) AS score
+                (
+                    (sp.cpi * pr.weight_cpi) + 
+                    (sp.academic_year * pr.weight_year) + 
+                    (IF(sp.department = c.department, 1, 0) * pr.weight_dept_match) +
+                    (CASE 
+                        WHEN r.intent = 'major' THEN pr.weight_major
+                        WHEN r.intent = 'minor' THEN pr.weight_minor
+                        ELSE pr.weight_elective 
+                     END)
+                ) AS score
             FROM enrollments r
             JOIN student_profiles sp ON r.student_id = sp.user_id
             JOIN course_offerings co ON r.offering_id = co.offering_id
-            JOIN courses c ON co.course_id = c.course_id -- Need this for department
+            JOIN courses c ON co.course_id = c.course_id
             JOIN priority_rules pr ON co.course_id = pr.course_id
             WHERE r.offering_id = ?
             ORDER BY score DESC, r.requested_at ASC
         `, [offeringId]);
 
-        // 2. Get Max Seats
-        const [[{ max_seats }]] = await connection.query(
-            'SELECT max_seats FROM course_offerings WHERE offering_id = ?', [offeringId]
+        // 2. Get Max Seats for this specific offering
+        const [[offeringData]] = await connection.query(
+            'SELECT max_seats FROM course_offerings WHERE offering_id = ?', 
+            [offeringId]
         );
+        
+        if (!offeringData) throw new Error("Offering not found");
+        const maxSeats = offeringData.max_seats;
 
-        // 3. Distribute Seats
+        // 3. Distribute Seats: Accept top students, reject the rest
         for (let i = 0; i < rankedStudents.length; i++) {
-            const status = (i < max_seats) ? 'accepted' : 'rejected';
+            const status = (i < maxSeats) ? 'accepted' : 'rejected';
             await connection.query(
                 'UPDATE enrollments SET status = ? WHERE student_id = ? AND offering_id = ?',
                 [status, rankedStudents[i].student_id, offeringId]
