@@ -143,7 +143,7 @@ const addPrerequisiteController = async (req, res) => {
 // GET /api/courses/student-enrollments
 const getStudentEnrollmentsController = async (req, res) => {
   try {
-    const userId = req.headers['user-id'];
+    const userId = req.query.user_id || req.headers['user-id'] || req.body?.user_id;
     
     if (!userId) {
       return res.status(400).json({ message: "User ID header missing" });

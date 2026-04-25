@@ -19,12 +19,9 @@ const STUDENT_VIEWS = {
   'summer-25263': StudentRegistrationFlow,
   'hss-26271': StudentRegistrationFlow,
   'pre-reg-26271': StudentRegistrationFlow,
-  profile: () => (
-    <StudentPlaceholder title="Student Profile">View and update your programme details here.</StudentPlaceholder>
-  ),
-  password: () => (
-    <StudentPlaceholder title="Change Password">
-      Password changes will be handled by your institute authentication service.
+  profile: ({ user }) => (
+    <StudentPlaceholder title="Student Profile" user={user}>
+      View your student information below.
     </StudentPlaceholder>
   ),
   about: About,
@@ -213,7 +210,13 @@ function App() {
         role: apiUser.role,
         name: apiUser.name || apiUser.username,
         displayName: apiUser.name || apiUser.username,
+        email: apiUser.email,
         rollNo: apiUser.roll_no || apiUser.faculty_id || apiUser.user_id,
+        department: apiUser.department,
+        branch: apiUser.department,
+        academicYear: apiUser.academic_year,
+        cpi: apiUser.cpi,
+        program: apiUser.program || 'B.Tech',
         facultyId: apiUser.faculty_id,
         staffId: apiUser.user_id,
         externalId: apiUser.user_id,
