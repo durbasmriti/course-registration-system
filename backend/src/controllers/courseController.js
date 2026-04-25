@@ -5,7 +5,8 @@ const {
   updateOfferingRules,
   processAllocations,
   addCourse,
-  addPrerequisite
+  addPrerequisite,
+  getStudentEnrollments
 } = require('../services/courseService');
 
 const getCourses = async (req, res) => {
@@ -19,12 +20,40 @@ const getCourses = async (req, res) => {
 
 const requestCourseController = async (req, res) => {
   try {
-    const { user_id, offering_id, intent } = req.body;
+    let { user_id, offering_id, course_id, intent } = req.body;
 
-    if (!user_id || !offering_id) {
+    if (!user_id) {
       return res.status(400).json({
-        message: "Missing fields"
+        message: "Missing required field: user_id"
       });
+    }
+
+    if (!offering_id && !course_id) {
+      return res.status(400).json({
+        message: "Missing required field: either offering_id or course_id must be provided"
+      });
+    }
+
+    // If only course_id is provided, look up offering_id
+    if (!offering_id && course_id) {
+      const { getPool } = require('../db/pool');
+      const pool = getPool();
+      try {
+        const [rows] = await pool.query(
+          'SELECT offering_id FROM course_offerings WHERE course_id = ? LIMIT 1',
+          [course_id]
+        );
+        if (rows.length === 0) {
+          return res.status(404).json({
+            message: `No offering found for course_id: ${course_id}`
+          });
+        }
+        offering_id = rows[0].offering_id;
+      } catch (err) {
+        return res.status(500).json({
+          message: `Error looking up offering: ${err.message}`
+        });
+      }
     }
 
     await requestCourse(user_id, offering_id, intent);
@@ -111,7 +140,21 @@ const addPrerequisiteController = async (req, res) => {
   }
 };
 
+// GET /api/courses/student-enrollments
+const getStudentEnrollmentsController = async (req, res) => {
+  try {
+    const userId = req.headers['user-id'];
+    
+    if (!userId) {
+      return res.status(400).json({ message: "User ID header missing" });
+    }
 
+    const enrollments = await getStudentEnrollments(userId);
+    res.json(enrollments);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 
 module.exports = {
@@ -120,5 +163,6 @@ module.exports = {
   updateRulesController,
   runAllocationController,
   addCourseController,
-  addPrerequisiteController
+  addPrerequisiteController,
+  getStudentEnrollmentsController
 };

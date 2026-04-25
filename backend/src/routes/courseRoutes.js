@@ -8,11 +8,15 @@ const {
   updateRulesController,
   runAllocationController,
   addCourseController,
-  addPrerequisiteController, getProfileController
+  addPrerequisiteController,
+  getStudentEnrollmentsController
 } = require('../controllers/courseController');
 
 // GET all courses
 router.get('/', getCourses); // working  // working
+
+// Student: Get their enrollments and applied credits
+router.get('/student-enrollments', getStudentEnrollmentsController);
 
 // Student only: Request a course
 router.post('/request', requestCourseController);  // working

@@ -21,12 +21,18 @@ export function clearAuthHeaders() {
 
 /** Student */
 export const studentService = {
+  // Fetch all available courses
   getCourses: () => api.get('/courses'),
-  requestCourse: (body) => api.post('/request', body),
-  getMyRequests: () => api.get('/my-requests'),
-  getTimetable: () => api.get('/timetable'),
-  withdrawRequest: (courseId) => api.delete(`/request/${courseId}`),
-  dropEnrollment: (courseId) => api.post('/drop', { courseId }),
+  // Request a course using offering_id (or course_id if available)
+  requestCourse: (body) => api.post('/courses/request', body),
+  // Fetch student profile information from database
+  getStudentProfile: (userId) => api.get('/users/profile', {
+    headers: { 'user-id': userId }
+  }),
+  // Fetch student enrollments (for calculating applied credits)
+  getStudentEnrollments: (userId) => api.get('/courses/student-enrollments', {
+    headers: { 'user-id': userId }
+  }),
 };
 
 /** Professor */

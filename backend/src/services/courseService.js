@@ -302,6 +302,32 @@ const addPrerequisite = async (courseId, prerequisiteId) => {
     }
 };
 
+// Get student enrollments with course details (for calculating applied credits)
+const getStudentEnrollments = async (userId) => {
+    const pool = getPool();
+    try {
+        const [enrollments] = await pool.query(`
+            SELECT 
+                e.enrollment_id,
+                e.offering_id,
+                e.status,
+                e.intent,
+                e.requested_at,
+                c.course_id,
+                c.course_code,
+                c.title,
+                c.credits
+            FROM enrollments e
+            JOIN course_offerings co ON e.offering_id = co.offering_id
+            JOIN courses c ON co.course_id = c.course_id
+            WHERE e.student_id = ?
+            ORDER BY e.requested_at DESC
+        `, [userId]);
+        return enrollments;
+    } catch (err) {
+        throw new Error(`Database error: ${err.message}`);
+    }
+};
 
 
-module.exports = { getAllCourses, requestCourse, updateOfferingRules, processAllocations, addCourse, addPrerequisite};
+module.exports = { getAllCourses, requestCourse, updateOfferingRules, processAllocations, addCourse, addPrerequisite, getStudentEnrollments };
