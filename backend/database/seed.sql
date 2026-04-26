@@ -2,26 +2,26 @@
 -- USERS
 -- -------------------------------------------------------
 INSERT INTO users (user_id, username, email, password_hash, role) VALUES
-(1, 'admin',        'admin@iitk.ac.in',        '$2b$10$K2hULlAhIvaXwT9KDUt7Yev14ektgCkHmzkZbtNacjD0onmJr4ZQ.', 'admin'),
-(2, 'arnab',        'arnab@iitk.ac.in',        '$2b$10$vcIpLr4D5yobRSqYVQbcCOHF.os.DiJrPVJx/wqbJUGvTAu4gi.EG', 'professor'),
-(3, 'ritwij',       'ritwij@iitk.ac.in',       '$2b$10$YixAatJPXUkpKMQ9f3pujeq/F2Mk/DBU2IHx8mMUzo9jGGg4xBPxq', 'professor'),
-(4, 'durbasmriti',  'durbasmriti@iitk.ac.in',  '$2b$10$C6cMjvs/D026fvwE8BH8HenCvreqT0f8wRDZITzSFRmEOaxrAkM8.', 'student'),
-(5, 'pallavi',      'pallavi@iitk.ac.in',      '$2b$10$pwHdS.4Plh8C.H1FiK5IteKzWh717Q3skUK30JYeBzIVZqEYAXRrO', 'student'),
-(6, 'jyothika',     'jyothika@iitk.ac.in',     '$2b$10$Qbxp0FqQHM8LCX/Fv/yZ1uphbgaiRgw7GafF7LAS6WFx3TPqvsVZa', 'student'),
-(7, 'aayushman',    'aayushman@iitk.ac.in',    '$2b$10$GTWG6CB8WuNLCb9msOQFeO.ItWWF2j3p9i85C545XWblGOdLcFm7G', 'student'),
-(8, 'arnav',        'arnav@iitk.ac.in',        '$2b$10$5BhieYdzLrlVuKtbDhKxfeawLPvm.4uW3gkWMnVLAxrcT1aKpb0OC', 'student'),
-(9, 'satyarth',     'satyarth@iitk.ac.in',     '$2b$10$H0je1rYFvkUwImPJsTBVZu.viWEw83uN9Urib4SD/o93YoKUypsYy', 'student'),
-(10, 'shreya',      'shreya@iitk.ac.in',      '$2b$10$jR4b6Pr.8iLZmP0MSoS8F..bxu5fEDYe4514lEPIhDZABL1uqHKa2', 'student'),
-(11, 'tanmay',      'tanmay@iitk.ac.in',      '$2b$10$kGAfWHsDR8s2e0rrH7vsOey2PyiRnjbtquNGVaJhpImg.4TVkXoPa', 'student'),
-(12, 'priyanshu',   'priyanshu@iitk.ac.in',   '$2b$10$q7ilgJb5q670FTYP8Prn4uJnTcd1F45LetkC/jVD.YGqVo.d4IcxS', 'student'),
-(13, 'ananya',      'ananya@iitk.ac.in',      '$2b$10$CSottR7zUsa9hWsv4xthZumkgp1bahv/hPibSAJSJIxkG65o4sfZW', 'student'),
-(14, 'philip',       'philip@iitk.ac.in',       '$2b$10$9IWpPbJRjdDzFhARkpUuVezJsGteaS1JmgJZVL5WUQ.kCZWaq8sUm', 'professor'),
-(15, 'sudharsana',      'sudharsana@iitk.ac.in',      '$2b$10$YeXH.UML7ZMVxe.5zjv1XOfqYZ4NlePfg0qEYtu73dvBukhsp6dku', 'professor'),
-(16, 'baswana',     'baswana@iitk.ac.in',     '$2b$10$mc/7i1ed7e63fZ34aFVyz.3uHM.6HfcYH/yolRWylCuzbOA2Q4ZV.', 'professor'),
-(17, 'preeti',     'preeti@iitk.ac.in',     '$2b$10$5EnrgdB.EY8cJtVHUTn5l.XjbftiFuX2kQ01RDGAMRvdvHgNIyOqW', 'professor'),
-(18, 'gayathri',     'gayathri@iitk.ac.in',     '$2b$10$r36dxIDoFdPyRQbfR1Tbreqsso6vO5uTQ0zpiAKqPa8Q5LPC8vPUO', 'student'),
-(19, 'manas',     'manas@iitk.ac.in',     '$2b$10$BWM7sQ9O1Z4jUZh7qdf9DOtDSVk0VewaBd477PvnFGfFcDwVGBJeO', 'student'),
-(20, 'sneha',     'sneha@iitk.ac.in',     '$2b$10$L2kABz6BeZw6I8QQ3DPp/uw4.JcDPyFLpBB/iuGyBjRzCW6x60sPy', 'student');
+(1, 'admin',        'admin@iitk.ac.in',        '$2b$10$MhexI01yOf7vtax4xGlOYOmZmDuzehEPlh4UpfDGNd8rs3opoHCHm', 'admin'),
+(2, 'arnab',        'arnab@iitk.ac.in',        '$2b$10$GOtD0YuMCGRDBoadzwtkbOa83nMXL7U2h0XLbeZZ5JrHD5yrNH4XK', 'professor'),
+(3, 'ritwij',       'ritwij@iitk.ac.in',       '$2b$10$BZaLSu4TNQsgHr.7SsU.iukcTOdS19up0myuqnKmTTH3c9x3eqxzu', 'professor'),
+(4, 'durbasmriti',  'durbasmriti@iitk.ac.in',  '$2b$10$um/XgDk/20jz/SqRkPaAfeTBcWnLf2bo/MPmbRHRDFMUznBxxG66e', 'student'),
+(5, 'pallavi',      'pallavi@iitk.ac.in',      '$2b$10$SwkqnompVxlcB3R.uC/bB.7.3P3Q8s79CYR./kW3Hf3LV7DOBVwSu', 'student'),
+(6, 'jyothika',     'jyothika@iitk.ac.in',     '$2b$10$vOpIiGzAPEdg7/y6HnKBH.DJkeCLlWz36Gvcvm93lWANfzrbah0lO', 'student'),
+(7, 'aayushman',    'aayushman@iitk.ac.in',    '$2b$10$h/Yhuw/mCjRD0t0cBwOJTOGktIaqofqgilMZpkK.zuvf9gN4hpEqq', 'student'),
+(8, 'arnav',        'arnav@iitk.ac.in',        '$2b$10$/hf2VOGJ3vFb5.j9jqaQtes9GY/NPtNCDUQrXZwVndJQiB8whddk2', 'student'),
+(9, 'satyarth',     'satyarth@iitk.ac.in',     '$2b$10$ooUkka2aww1nKgJVniTpW.OiMSYBqAkOCA6vVZnGdq9QzVh8Km8sO', 'student'),
+(10, 'shreya',      'shreya@iitk.ac.in',      '$2b$10$CeroS4m/VtfMwbeuetTnc.vefd0uLLlQsDteKqRV.uXIc9p8LkYqq', 'student'),
+(11, 'tanmay',      'tanmay@iitk.ac.in',      '$2b$10$DgGr/f9xmVvAElbe9YdYDO5ykOPa1HJpmi7ln2EXzKr1/VsQB73Ja', 'student'),
+(12, 'priyanshu',   'priyanshu@iitk.ac.in',   '$2b$10$KIpEt4P8SqEgctW8xpaw1etvM7K8D15WdqmerBQ6MMbdEvw/hBsDK', 'student'),
+(13, 'ananya',      'ananya@iitk.ac.in',      '$2b$10$EeRcKL455rCAl17U4MNFXe7MCsPuGajLDbgeJouHCl/EcPdcSQaXC', 'student'),
+(14, 'philip',       'philip@iitk.ac.in',       '$2b$10$bYat3B6Rw1XCr.AWEP4fy.N5EZWrJenOmuemE5M3tfw135NmYuP3O', 'professor'),
+(15, 'sudharsana',      'sudharsana@iitk.ac.in',      '$2b$10$nWPB2k3LDc8dwyqiRm9Fy.3GdUtrVPZOwq5HUIz9Alrqc.64v5qmO', 'professor'),
+(16, 'baswana',     'baswana@iitk.ac.in',     '$2b$10$L5PMMh.E8sWeuStL1LR4JeYTErS7gGhuqkNhSZ2520ce2TYbjV3EK', 'professor'),
+(17, 'preeti',     'preeti@iitk.ac.in',     '$2b$10$hiOOUL6npx717Z9/rbf8uu5eWGPf/OAe858lDltdht67pS4qiTZ/G', 'professor'),
+(18, 'gayathri',     'gayathri@iitk.ac.in',     '$2b$10$eGMQzhZXAMvCVeaWIgZkHu7shOk0oTfk3YnbQh9GEkt1zhdjEZE7e', 'student'),
+(19, 'manas',     'manas@iitk.ac.in',     '$2b$10$K0AGuYbLwO/9vx.89mvqSOOAQHMhDfhBFauyhrLKGhn2Qpx.4dYPO', 'student'),
+(20, 'sneha',     'sneha@iitk.ac.in',     '$2b$10$wdHrRaBUxE2ZRZVFu9iujea4g8jRzOlol1MqkImoLvHMgohS5xrB2', 'student');
 
 -- -------------------------------------------------------
 -- STUDENT PROFILES
@@ -95,7 +95,7 @@ INSERT INTO courses (course_id, course_code, title, credits, department) VALUES
 -- -------------------------------------------------------
 INSERT INTO prerequisites (course_id, prerequisite_id) VALUES
 (2, 5), -- CS610 requires CS420
-(1, 5),  --- CS371 requires CS420
+(1, 5),  -- CS371 requires CS420
 (4, 15); -- CS315 requires CS101
 
 
@@ -144,7 +144,7 @@ INSERT INTO student_transcript (student_id, offering_id, grade, is_passed, compl
 (10, 6, 4.0, FALSE, '2025-11-30'),   -- Shreya      failed CS420 in sem1 2025
 (11, 16, 7.0, TRUE,  '2025-11-30'),   -- Tanmay      passed CS420 in sem1 2025
 (12, 16, 8.0, FALSE,  '2025-11-30'),   -- Priyanshu   failed CS420 in sem1 2025
-(13, 16, 9.0, TRUE,  '2025-11-30'),   -- Ananya      passed CS420 in sem1 2025
+(13, 16, 9.0, TRUE,  '2025-11-30');   -- Ananya      passed CS420 in sem1 2025
 
 
 -- -------------------------------------------------------
@@ -158,5 +158,3 @@ INSERT INTO student_transcript (student_id, offering_id, grade, is_passed, compl
 -- (5, 1, 3, 'major',    'pending'),   -- Pallavi     → CS371
 -- (5, 2, 3, 'minor',    'pending'),   -- Pallavi     → CS610 (cleared: passed CS371)
 -- (6, 3, 3, 'major',    'pending'),   -- Jyothika    → CE683
-
-
