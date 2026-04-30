@@ -197,7 +197,7 @@ const processAllocations = async (offeringId) => {
             JOIN student_profiles sp ON r.student_id = sp.user_id
             JOIN course_offerings co ON r.offering_id = co.offering_id
             JOIN courses c ON co.course_id = c.course_id
-            JOIN priority_rules pr ON co.course_id = pr.course_id
+            LEFT JOIN priority_rules pr ON co.course_id = pr.course_id
             WHERE r.offering_id = ?
             ORDER BY score DESC, r.requested_at ASC
         `, [offeringId]);

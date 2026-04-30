@@ -10,6 +10,19 @@ const ALLOWED_LOGIN_IDS = new Set([
   'pallavi',
   'jyothika',
   'aayushman',
+  'arnav',
+  'satyarth',
+  'shreya',
+  'tanmay',
+  'priyanshu',
+  'ananya',
+  'philip',
+  'sudharsana',
+  'baswana',
+  'preeti',
+  'gayathri',
+  'manas',
+  'sneha',
 ]);
 
 const getUserProfile = async (userId) => {
